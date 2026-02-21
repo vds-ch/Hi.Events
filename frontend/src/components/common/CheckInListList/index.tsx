@@ -48,9 +48,7 @@ export const CheckInListList = ({checkInLists, openCreateModal}: CheckInListList
                         <p>
                             <Trans>
                                 <p>
-                                    Check-in lists help manage attendee entry for your event. You can associate multiple
-                                    tickets with a check-in list and ensure only those with valid tickets can enter.
-                                </p>
+                                    Check-in lists help you manage event entry by day, area, or ticket type. You can link tickets to specific lists such as VIP zones or Day 1 passes and share a secure check-in link with staff. No account is required. Check-in works on mobile, desktop, or tablet, using a device camera or HID USB scanner.                                </p>
                             </Trans>
                         </p>
                         <Button
@@ -130,7 +128,7 @@ export const CheckInListList = ({checkInLists, openCreateModal}: CheckInListList
                                     <Progress
                                         value={checkInLists.length === 0 ? 0 : (list.checked_in_attendees / list.total_attendees) * 100}
                                         radius={'xl'}
-                                        color={list.checked_in_attendees === list.total_attendees ? 'purple' : 'green'}
+                                        color={list.checked_in_attendees === list.total_attendees ? 'primary' : 'green'}
                                         size={'xl'}
                                         style={{marginTop: '10px'}}
                                     />

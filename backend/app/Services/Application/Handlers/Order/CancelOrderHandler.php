@@ -2,14 +2,14 @@
 
 namespace HiEvents\Services\Application\Handlers\Order;
 
-use HiEvents\DomainObjects\Enums\WebhookEventType;
 use HiEvents\DomainObjects\Generated\OrderDomainObjectAbstract;
 use HiEvents\DomainObjects\OrderDomainObject;
 use HiEvents\Exceptions\ResourceConflictException;
 use HiEvents\Repository\Interfaces\OrderRepositoryInterface;
 use HiEvents\Services\Application\Handlers\Order\DTO\CancelOrderDTO;
+use HiEvents\Services\Application\Handlers\Order\DTO\RefundOrderDTO;
+use HiEvents\Services\Application\Handlers\Order\Payment\Stripe\RefundOrderHandler;
 use HiEvents\Services\Domain\Order\OrderCancelService;
-use HiEvents\Services\Infrastructure\Webhook\WebhookDispatchService;
 use Illuminate\Database\DatabaseManager;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Throwable;
@@ -20,6 +20,7 @@ class CancelOrderHandler
         private readonly OrderCancelService       $orderCancelService,
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly DatabaseManager          $databaseManager,
+        private readonly RefundOrderHandler       $refundOrderHandler,
     )
     {
     }
@@ -46,6 +47,18 @@ class CancelOrderHandler
             }
 
             $this->orderCancelService->cancelOrder($order);
+
+            if ($cancelOrderDTO->refund && $order->isRefundable()) {
+                $refundDTO = new RefundOrderDTO(
+                    event_id: $cancelOrderDTO->eventId,
+                    order_id: $cancelOrderDTO->orderId,
+                    amount: $order->getTotalGross() - $order->getTotalRefunded(),
+                    notify_buyer: true,
+                    cancel_order: false,
+                );
+
+                $this->refundOrderHandler->handle($refundDTO);
+            }
 
             return $this->orderRepository->findById($order->getId());
         });

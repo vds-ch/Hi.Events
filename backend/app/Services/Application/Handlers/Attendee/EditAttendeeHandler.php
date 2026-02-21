@@ -4,7 +4,6 @@ namespace HiEvents\Services\Application\Handlers\Attendee;
 
 use HiEvents\DomainObjects\AttendeeDomainObject;
 use HiEvents\DomainObjects\Enums\ProductPriceType;
-use HiEvents\DomainObjects\Enums\WebhookEventType;
 use HiEvents\DomainObjects\Generated\AttendeeDomainObjectAbstract;
 use HiEvents\DomainObjects\Generated\ProductDomainObjectAbstract;
 use HiEvents\DomainObjects\ProductDomainObject;
@@ -14,7 +13,9 @@ use HiEvents\Repository\Interfaces\AttendeeRepositoryInterface;
 use HiEvents\Repository\Interfaces\ProductRepositoryInterface;
 use HiEvents\Services\Application\Handlers\Attendee\DTO\EditAttendeeDTO;
 use HiEvents\Services\Domain\Product\ProductQuantityUpdateService;
-use HiEvents\Services\Infrastructure\Webhook\WebhookDispatchService;
+use HiEvents\Services\Infrastructure\DomainEvents\DomainEventDispatcherService;
+use HiEvents\Services\Infrastructure\DomainEvents\Enums\DomainEventType;
+use HiEvents\Services\Infrastructure\DomainEvents\Events\AttendeeEvent;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -26,7 +27,7 @@ class EditAttendeeHandler
         private readonly ProductRepositoryInterface   $productRepository,
         private readonly ProductQuantityUpdateService $productQuantityService,
         private readonly DatabaseManager              $databaseManager,
-        private readonly WebhookDispatchService       $webhookDispatchService,
+        private readonly DomainEventDispatcherService $domainEventDispatcherService,
     )
     {
     }
@@ -38,17 +39,19 @@ class EditAttendeeHandler
     public function handle(EditAttendeeDTO $editAttendeeDTO): AttendeeDomainObject
     {
         return $this->databaseManager->transaction(function () use ($editAttendeeDTO) {
-            $this->validateProductId($editAttendeeDTO);
-
             $attendee = $this->getAttendee($editAttendeeDTO);
+
+            $this->validateProductId($editAttendeeDTO, $attendee);
 
             $this->adjustProductQuantities($attendee, $editAttendeeDTO);
 
             $updatedAttendee = $this->updateAttendee($editAttendeeDTO);
 
-            $this->webhookDispatchService->queueAttendeeWebhook(
-                eventType: WebhookEventType::ATTENDEE_UPDATED,
-                attendeeId: $updatedAttendee->getId(),
+            $this->domainEventDispatcherService->dispatch(
+                new AttendeeEvent(
+                    type: DomainEventType::ATTENDEE_UPDATED,
+                    attendeeId: $updatedAttendee->getId(),
+                )
             );
 
             return $updatedAttendee;
@@ -81,7 +84,10 @@ class EditAttendeeHandler
      * @throws ValidationException
      * @throws NoTicketsAvailableException
      */
-    private function validateProductId(EditAttendeeDTO $editAttendeeDTO): void
+    private function validateProductId(
+        EditAttendeeDTO $editAttendeeDTO,
+        AttendeeDomainObject $attendee,
+    ): void
     {
         /** @var ProductDomainObject $product */
         $product = $this->productRepository
@@ -101,6 +107,11 @@ class EditAttendeeHandler
             throw ValidationException::withMessages([
                 'product_price_id' => __('Product price ID is not valid'),
             ]);
+        }
+
+        // No need to check availability if the product price hasn't changed
+        if ($attendee->getProductPriceId() === $editAttendeeDTO->product_price_id) {
+            return;
         }
 
         $availableQuantity = $this->productRepository->getQuantityRemainingForProductPrice(

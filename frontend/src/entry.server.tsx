@@ -1,15 +1,13 @@
 import type * as express from "express";
 import ReactDOMServer from "react-dom/server";
-import {dehydrate} from "@tanstack/react-query";
+import {dehydrate, QueryClient} from "@tanstack/react-query";
 
 import {router} from "./router";
 import {App} from "./App";
-import {queryClient} from "./utilites/queryClient";
 import {setAuthToken} from "./utilites/apiClient.ts";
-import {i18n} from "@lingui/core";
 import {createStaticHandler, createStaticRouter, StaticRouterProvider} from "react-router";
-
-const helmetContext = {};
+import {dynamicActivateLocale} from "./locales.ts";
+import {setSsrQueryClient} from "./utilites/ssrQueryClient.ts";
 
 const getLocale = (req: express.Request): string => {
     if (req.cookies.locale) {
@@ -26,18 +24,36 @@ export async function render(params: {
 }) {
     setAuthToken(params.req.cookies.token);
 
+    // Create a fresh query client for each request
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                staleTime: 60 * 1000, // 60 seconds - prevents immediate refetch on client
+                refetchOnWindowFocus: false,
+                networkMode: "always",
+            },
+            mutations: {
+                networkMode: 'always',
+            }
+        },
+    });
+
+    setSsrQueryClient(queryClient);
+
+    const helmetContext = {};
+
     const {query, dataRoutes} = createStaticHandler(router);
     const remixRequest = createFetchRequest(params.req, params.res);
     const context = await query(remixRequest);
-    const locale = getLocale(params.req);
 
     if (context instanceof Response) {
         throw context;
     }
 
-    i18n.activate(locale);
+    await dynamicActivateLocale(getLocale(params.req));
 
     const routerWithContext = createStaticRouter(dataRoutes, context);
+    
     const appHtml = ReactDOMServer.renderToString(
         <App
             queryClient={queryClient}
@@ -52,6 +68,9 @@ export async function render(params: {
     );
 
     const dehydratedState = dehydrate(queryClient);
+
+    // Clean up the SSR query client
+    setSsrQueryClient(null);
 
     return {
         appHtml: appHtml,

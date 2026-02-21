@@ -1,17 +1,16 @@
-import {Button, PasswordInput, SimpleGrid, TextInput} from "@mantine/core";
+import {Button, Checkbox, PasswordInput, SimpleGrid, TextInput} from "@mantine/core";
 import {hasLength, isEmail, matchesField, useForm} from "@mantine/form";
 import {RegisterAccountRequest} from "../../../../types.ts";
 import {useFormErrorResponseHandler} from "../../../../hooks/useFormErrorResponseHandler.tsx";
 import {useRegisterAccount} from "../../../../mutations/useRegisterAccount.ts";
 import {NavLink, useLocation, useNavigate} from "react-router";
 import {t, Trans} from "@lingui/macro";
-import {InputGroup} from "../../../common/InputGroup";
-import {Card} from "../../../common/Card";
 import classes from "./Register.module.scss";
 import {getClientLocale} from "../../../../locales.ts";
-import React, {useEffect} from "react";
+import {useEffect} from "react";
 import {getUserCurrency} from "../../../../utilites/currency.ts";
-import {IconLock, IconMail} from "@tabler/icons-react";
+import {getConfig} from "../../../../utilites/config.ts";
+import {captureUtmData, getStoredUtmData, clearStoredUtmData} from "../../../../utilites/utm.ts";
 
 export const Register = () => {
     const navigate = useNavigate();
@@ -31,6 +30,7 @@ export const Register = () => {
             locale: getClientLocale(),
             invite_token: '',
             currency_code: getUserCurrency(),
+            marketing_opt_in: false,
         },
         validate: {
             password: hasLength({min: 8}, t`Password must be at least 8 characters`),
@@ -42,9 +42,13 @@ export const Register = () => {
     const mutate = useRegisterAccount();
 
     const registerUser = (data: RegisterAccountRequest) => {
-        mutate.mutate({registerData: data}, {
+        const utmData = getStoredUtmData();
+        const registrationData = utmData ? {...data, ...utmData} : data;
+
+        mutate.mutate({registerData: registrationData}, {
             onSuccess: () => {
-                navigate('/welcome');
+                clearStoredUtmData();
+                navigate(`/welcome${location.search}`);
             },
             onError: (error: any) => {
                 errorHandler(form, error, error.response?.data?.message);
@@ -53,6 +57,8 @@ export const Register = () => {
     }
 
     useEffect(() => {
+        captureUtmData();
+
         const searchParams = new URLSearchParams(location.search);
         const token = searchParams.get('invite_token');
 
@@ -64,12 +70,13 @@ export const Register = () => {
     return (
         <>
             <header className={classes.header}>
-                <h2>{t`Welcome to Hi.Events 👋`}</h2>
+                <h2>{t`Get started`}</h2>
                 <p>
                     <Trans>
-                        Create an account or <NavLink to={'/auth/login'}>
-                        {t`Log in`}
-                    </NavLink> to get started
+                        Already have an account?{' '}
+                        <NavLink to={`/auth/login${location.search}`}>
+                            {t`Log in`}
+                        </NavLink>
                     </Trans>
                 </p>
             </header>
@@ -77,7 +84,7 @@ export const Register = () => {
             <div className={classes.registerCard}>
                 <form onSubmit={form.onSubmit((values) => registerUser(values as RegisterAccountRequest))}>
 
-                    <SimpleGrid verticalSpacing={0} cols={{base: 2, xs: 2}}>
+                    <SimpleGrid verticalSpacing={{base: "md", sm: 0}} cols={{base: 1, sm: 2}} mb="md">
                         <TextInput
                             {...form.getInputProps('first_name')}
                             label={t`First Name`}
@@ -99,43 +106,44 @@ export const Register = () => {
                         required
                     />
 
-                    <div style={{marginBottom: '20px'}}>
-                        <SimpleGrid verticalSpacing={0} cols={{base: 2, xs: 2}}>
-                            <PasswordInput
-                                {...form.getInputProps('password')}
-                                label={t`Password`}
-                                placeholder={t`Your password`}
-                                required
-                                mt="md"
-                                mb={0}
-                            />
-                            <PasswordInput
-                                {...form.getInputProps('password_confirmation')}
-                                label={t`Confirm Password`}
-                                placeholder={t`Confirm password`}
-                                required
-                                mt="md"
-                                mb={0}
-                            />
-                        </SimpleGrid>
-                    </div>
+                    <SimpleGrid verticalSpacing={{base: "md", sm: 0}} cols={{base: 1, sm: 2}} mt="md" mb="md">
+                        <PasswordInput
+                            {...form.getInputProps('password')}
+                            label={t`Password`}
+                            placeholder={t`Your password`}
+                            required
+                        />
+                        <PasswordInput
+                            {...form.getInputProps('password_confirmation')}
+                            label={t`Confirm Password`}
+                            placeholder={t`Confirm password`}
+                            required
+                        />
+                    </SimpleGrid>
 
                     <TextInput
                         style={{display: 'none'}}
                         {...form.getInputProps('timezone')}
                         type="hidden"
                     />
-                    <Button color={'var(--tk-pink)'} type="submit" fullWidth disabled={mutate.isPending}>
+
+                    <Checkbox
+                        mb="md"
+                        {...form.getInputProps('marketing_opt_in', {type: 'checkbox'})}
+                        label={<Trans>Receive product updates from {getConfig("VITE_APP_NAME", "Hi.Events")}.</Trans>}
+                    />
+
+                    <Button color="secondary.5" type="submit" fullWidth disabled={mutate.isPending}>
                         {mutate.isPending ? t`Working...` : t`Register`}
                     </Button>
                 </form>
                 <footer>
                     <Trans>
                         By registering you agree to our <NavLink target={'_blank'}
-                                                                 to={'https://hi.events/terms-of-service?utm_source=app-register-footer'}>Terms
+                                                                 to={getConfig("VITE_TOS_URL", "https://hi.events/terms-of-service?utm_source=app-register-footer") as string}>Terms
                         of Service</NavLink> and <NavLink
                         target={'_blank'}
-                        to={'https://hi.events/privacy-policy?utm_source=app-register-footer'}>Privacy Policy</NavLink>.
+                        to={getConfig("VITE_PRIVACY_URL", 'https://hi.events/privacy-policy?utm_source=app-register-footer') as string}>Privacy Policy</NavLink>.
                     </Trans>
                 </footer>
             </div>

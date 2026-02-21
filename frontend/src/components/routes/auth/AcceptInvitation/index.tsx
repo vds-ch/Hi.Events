@@ -1,4 +1,4 @@
-import {Alert, Anchor, Button, PasswordInput, Select, Switch, TextInput} from "@mantine/core";
+import {Anchor, Button, Checkbox, PasswordInput, Select, TextInput} from "@mantine/core";
 import {t, Trans} from "@lingui/macro";
 import {timezones} from "../../../../../data/timezones.ts";
 import {useNavigate, useParams} from "react-router";
@@ -9,7 +9,8 @@ import {useEffect} from "react";
 import {useAcceptInvitation} from "../../../../mutations/useAcceptInvitation.ts";
 import {showError, showSuccess} from "../../../../utilites/notifications.tsx";
 import {AcceptInvitationRequest} from "../../../../types.ts";
-import {Card} from "../../../common/Card";
+import {getConfig} from "../../../../utilites/config.ts";
+import classes from "./AcceptInvitation.module.scss";
 
 const AcceptInvitation = () => {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ const AcceptInvitation = () => {
             timezone: '',
             password_confirmation: '',
             terms: false,
+            marketing_opt_in: true,
         },
         validate: {
             first_name: hasLength({min: 1, max: 50}, t`First name must be between 1 and 50 characters`),
@@ -80,44 +82,94 @@ const AcceptInvitation = () => {
     }
 
     return (
-        <Card>
-            <Alert mb={20}>
-                {t`Please complete the form below to accept your invitation`}
-            </Alert>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-                <fieldset disabled={!isFetched}>
-                    <TextInput required {...form.getInputProps('first_name')}
-                               label={t`First Name`}/>
-                    <TextInput required {...form.getInputProps('last_name')}
-                               label={t`Last Name`}/>
-                    <TextInput disabled required {...form.getInputProps('email')} label={t`Email`}/>
+        <>
+            <header className={classes.header}>
+                <h2>{t`Accept invitation`}</h2>
+                <p>{t`Complete your profile to join the team.`}</p>
+            </header>
+            <div className={classes.invitationCard}>
+                <form onSubmit={form.onSubmit(handleSubmit)}>
+                    <fieldset disabled={!isFetched}>
+                        <div className={classes.inputGroup}>
+                            <TextInput
+                                required
+                                {...form.getInputProps('first_name')}
+                                label={t`First Name`}
+                                placeholder={t`John`}
+                            />
+                            <TextInput
+                                {...form.getInputProps('last_name')}
+                                label={t`Last Name`}
+                                placeholder={t`Smith`}
+                            />
+                        </div>
 
-                    <Select
-                        required
-                        searchable
-                        data={timezones}
-                        {...form.getInputProps('timezone')}
-                        label={t`Timezone`}
-                        placeholder={t`UTC`}
-                    />
+                        <div className={classes.inputGroup}>
+                            <TextInput
+                                disabled
+                                required
+                                {...form.getInputProps('email')}
+                                label={t`Email`}
+                            />
+                            <Select
+                                required
+                                searchable
+                                data={timezones}
+                                {...form.getInputProps('timezone')}
+                                label={t`Timezone`}
+                                placeholder={t`Select timezone`}
+                            />
+                        </div>
 
-                    <PasswordInput {...form.getInputProps('password')} label={t`New Password`} required/>
-                    <PasswordInput {...form.getInputProps('password_confirmation')} label={t`Confirm Password`}
-                                   required/>
+                        <div className={classes.inputGroup}>
+                            <PasswordInput
+                                {...form.getInputProps('password')}
+                                label={t`Password`}
+                                placeholder={t`Create a password`}
+                                required
+                            />
+                            <PasswordInput
+                                {...form.getInputProps('password_confirmation')}
+                                label={t`Confirm Password`}
+                                placeholder={t`Confirm password`}
+                                required
+                            />
+                        </div>
 
-                    <Switch {...form.getInputProps('terms', {type: 'checkbox'})}
+                        <Checkbox
+                            {...form.getInputProps('terms', {type: 'checkbox'})}
                             label={(
                                 <Trans>
-                                    I agree to the <Anchor target={'_blank'} href={'https://hi.events/terms-of-service'}>terms and conditions</Anchor>
+                                    I agree to the{' '}
+                                    <Anchor
+                                        target={'_blank'}
+                                        href={getConfig("VITE_TOS_URL", 'https://hi.events/terms-of-service')}
+                                    >
+                                        terms and conditions
+                                    </Anchor>
                                 </Trans>
-                            )}/>
+                            )}
+                        />
 
-                    <Button color={'var(--tk-pink)'} fullWidth loading={acceptInvitationMutation.isPending}
-                            type={'submit'}>{t`Accept Invitation`}</Button>
-                </fieldset>
-            </form>
-        </Card>
-    )
+                        <Checkbox
+                            mb="md"
+                            {...form.getInputProps('marketing_opt_in', {type: 'checkbox'})}
+                            label={<Trans>Receive product updates from {getConfig("VITE_APP_NAME", "Hi.Events")}.</Trans>}
+                        />
+
+                        <Button
+                            color="secondary.5"
+                            fullWidth
+                            loading={acceptInvitationMutation.isPending}
+                            type="submit"
+                        >
+                            {t`Accept Invitation`}
+                        </Button>
+                    </fieldset>
+                </form>
+            </div>
+        </>
+    );
 }
 
 export default AcceptInvitation;

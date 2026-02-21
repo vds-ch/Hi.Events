@@ -6,18 +6,21 @@ const config: LinguiConfig = {
         "zh-cn", // Mandarin Chinese (Simplified)
         "es", // Spanish
         "fr", // French
+        "nl", // Dutch
+		"hu", // Hungarian
         "pt-br", // Portuguese (Brazil)
         "ru", // Russian
         "de", // German
         "pt", // Portuguese (Portugal)
         "vi", // Vietnamese
-
-        // "it", // Italian
-        // "pl", // Polish
+        "tr", // Turkish
+        "se", // Swedish
+        "it", // Italian
+        "pl", // Polish
         // "ja", // Japanese
         // "ko", // Korean
         // "id", // Indonesian
-        // "zh-hk", // Cantonese Chinese (Hong Kong)
+        "zh-hk", // Cantonese Chinese (Hong Kong)
         // "cs", // Czech
         // "ga", // Irish
     ],

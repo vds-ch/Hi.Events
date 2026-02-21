@@ -1,17 +1,17 @@
-@import "../../../styles/mixins.scss";
+@use "../../../styles/mixins.scss";
 
 .statistics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  color: var(--tk-primary);
+  color: var(--hi-primary);
   margin: 0.5rem 0;
 
-  @include respond-below(lg) {
+  @include mixins.respond-below(lg) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @include respond-below(md) {
+  @include mixins.respond-below(md) {
     grid-template-columns: 1fr;
   }
 }
@@ -43,14 +43,14 @@
       line-height: 1.2;
       align-self: end;
 
-      @include respond-below(md) {
+      @include mixins.respond-below(md) {
         font-size: 1.5rem;
       }
     }
 
     .description {
       font-size: 1rem;
-      color: var(--tk-color-gray-dark);
+      color: var(--hi-color-gray-dark);
       font-weight: 500;
       align-self: start;
     }
@@ -70,7 +70,7 @@
       color: #ffffff;
       transition: transform 0.2s ease;
 
-      @include respond-below(md) {
+      @include mixins.respond-below(md) {
         width: 36px;
         height: 36px;
         border-radius: 10px;
@@ -82,7 +82,7 @@
     }
   }
 
-  @include respond-below(sm) {
+  @include mixins.respond-below(sm) {
     padding: 1rem !important;
 
     .leftPanel {

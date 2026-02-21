@@ -1,4 +1,4 @@
-@import "../../../styles/mixins";
+@use "../../../styles/mixins";
 
 .orderDetails {
   display: flex;
@@ -8,10 +8,10 @@
 
   .block {
     width: 50%;
-    margin-bottom: var(--tk-spacing-md);
+    margin-bottom: var(--hi-spacing-md);
   }
 
-  @include respond-below(md) {
+  @include mixins.respond-below(md) {
     flex-direction: column;
     flex-wrap: nowrap;
 

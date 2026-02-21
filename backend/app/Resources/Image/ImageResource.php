@@ -16,10 +16,15 @@ class ImageResource extends BaseResource
         return [
             'id' => $this->getId(),
             'url' => Url::getCdnUrl($this->getPath()),
+            'path' => $this->getPath(),
             'size' => $this->getSize(),
             'file_name' => $this->getFileName(),
             'mime_type' => $this->getMimeType(),
-            'type' => $this->getType()
+            'type' => $this->getType(),
+            'width' => $this->getWidth(),
+            'height' => $this->getHeight(),
+            'avg_colour' => $this->getAvgColour(),
+            'lqip_base64' => $this->getLqipBase64(),
         ];
     }
 }

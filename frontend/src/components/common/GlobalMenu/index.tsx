@@ -1,13 +1,22 @@
 import {Avatar, Menu, UnstyledButton} from "@mantine/core";
 import {getInitials} from "../../../utilites/helpers.ts";
-import {IconLifebuoy, IconLogout, IconSettingsCog, IconUser,} from "@tabler/icons-react";
+import {
+    IconLifebuoy,
+    IconLogout,
+    IconPlus,
+    IconSettingsCog,
+    IconShield,
+    IconUser,
+    IconUsers,
+} from "@tabler/icons-react";
 import {useGetMe} from "../../../queries/useGetMe.ts";
 import {NavLink} from "react-router";
 import {t} from "@lingui/macro";
 import {authClient} from "../../../api/auth.client.ts";
 import {useDisclosure} from "@mantine/hooks";
-import {AboutModal} from "../../modals/AboutModal/index.tsx";
+import {AboutModal} from "../../modals/AboutModal";
 import {getConfig} from "../../../utilites/config.ts";
+import {CreateOrganizerModal} from "../../modals/CreateOrganizerModal";
 
 interface Link {
     label: string;
@@ -19,8 +28,12 @@ interface Link {
 
 export const GlobalMenu = () => {
     const {data: me} = useGetMe();
-    const [aboutModalOpen, {open: openAboutModal, close: closeAboutModal}] =
-        useDisclosure(false);
+    const [aboutModalOpen, {open: openAboutModal, close: closeAboutModal}] = useDisclosure(false);
+    const [createOrganizerModalOpen, {
+        open: openCreateOrganizerModal,
+        close: closeCreateOrganizerModal
+    }] = useDisclosure(false);
+
 
     const links: Link[] = [
         {
@@ -35,6 +48,22 @@ export const GlobalMenu = () => {
         },
     ];
 
+    if (me?.role === 'ADMIN' || me?.role === 'SUPERADMIN') {
+        links.push({
+            label: t`User Management`,
+            icon: IconUsers,
+            link: `/account/users`
+        })
+    }
+
+    if (me?.role === 'SUPERADMIN') {
+        links.push({
+            label: t`Admin Dashboard`,
+            icon: IconShield,
+            link: `/admin`
+        })
+    }
+
     if (!getConfig("VITE_HIDE_ABOUT_LINK")) {
         links.push({
             label: `About & Support`,
@@ -44,11 +73,20 @@ export const GlobalMenu = () => {
     }
 
     links.push({
-        label: t`Logout`,
-        icon: IconLogout,
+        label: t`Create Organizer`,
+        icon: IconPlus,
         onClick: (event: any) => {
             event.preventDefault();
-            authClient.logout();
+            openCreateOrganizerModal();
+        }
+    });
+
+    links.push({
+        label: t`Logout`,
+        icon: IconLogout,
+        onClick: async (event: any) => {
+            event.preventDefault();
+            await authClient.logout();
             localStorage.removeItem("token");
             window.location.href = "/auth/login";
         },
@@ -59,7 +97,7 @@ export const GlobalMenu = () => {
             <Menu shadow="md" width={200}>
                 <Menu.Target>
                     <UnstyledButton>
-                        <Avatar color={"pink"} radius="xl">
+                        <Avatar color={"primary.1"} radius="xl">
                             {me ? getInitials(me.first_name + " " + me.last_name) : ".."}
                         </Avatar>
                     </UnstyledButton>
@@ -81,6 +119,7 @@ export const GlobalMenu = () => {
                 </Menu.Dropdown>
             </Menu>
             {aboutModalOpen && <AboutModal onClose={closeAboutModal}/>}
+            {createOrganizerModalOpen && <CreateOrganizerModal onClose={closeCreateOrganizerModal}/>}
         </>
     );
 };

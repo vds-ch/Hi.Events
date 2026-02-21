@@ -3,7 +3,16 @@
 use HiEvents\Http\Actions\Accounts\CreateAccountAction;
 use HiEvents\Http\Actions\Accounts\GetAccountAction;
 use HiEvents\Http\Actions\Accounts\Stripe\CreateStripeConnectAccountAction;
+use HiEvents\Http\Actions\Accounts\Stripe\GetStripeConnectAccountsAction;
 use HiEvents\Http\Actions\Accounts\UpdateAccountAction;
+use HiEvents\Http\Actions\Accounts\Vat\GetAccountVatSettingAction;
+use HiEvents\Http\Actions\Accounts\Vat\UpsertAccountVatSettingAction;
+use HiEvents\Http\Actions\Affiliates\CreateAffiliateAction;
+use HiEvents\Http\Actions\Affiliates\DeleteAffiliateAction;
+use HiEvents\Http\Actions\Affiliates\ExportAffiliatesAction;
+use HiEvents\Http\Actions\Affiliates\GetAffiliateAction;
+use HiEvents\Http\Actions\Affiliates\GetAffiliatesAction;
+use HiEvents\Http\Actions\Affiliates\UpdateAffiliateAction;
 use HiEvents\Http\Actions\Attendees\CheckInAttendeeAction;
 use HiEvents\Http\Actions\Attendees\CreateAttendeeAction;
 use HiEvents\Http\Actions\Attendees\EditAttendeeAction;
@@ -32,9 +41,11 @@ use HiEvents\Http\Actions\CheckInLists\GetCheckInListAction;
 use HiEvents\Http\Actions\CheckInLists\GetCheckInListsAction;
 use HiEvents\Http\Actions\CheckInLists\Public\CreateAttendeeCheckInPublicAction;
 use HiEvents\Http\Actions\CheckInLists\Public\DeleteAttendeeCheckInPublicAction;
+use HiEvents\Http\Actions\CheckInLists\Public\GetCheckInListAttendeePublicAction;
 use HiEvents\Http\Actions\CheckInLists\Public\GetCheckInListAttendeesPublicAction;
 use HiEvents\Http\Actions\CheckInLists\Public\GetCheckInListPublicAction;
 use HiEvents\Http\Actions\CheckInLists\UpdateCheckInListAction;
+use HiEvents\Http\Actions\Common\GetColorThemesAction;
 use HiEvents\Http\Actions\Common\Webhooks\StripeIncomingWebhookAction;
 use HiEvents\Http\Actions\Events\CreateEventAction;
 use HiEvents\Http\Actions\Events\DuplicateEventAction;
@@ -45,13 +56,29 @@ use HiEvents\Http\Actions\Events\GetOrganizerEventsPublicAction;
 use HiEvents\Http\Actions\Events\Images\CreateEventImageAction;
 use HiEvents\Http\Actions\Events\Images\DeleteEventImageAction;
 use HiEvents\Http\Actions\Events\Images\GetEventImagesAction;
-use HiEvents\Http\Actions\Events\Stats\GetEventCheckInStatsAction;
 use HiEvents\Http\Actions\Events\Stats\GetEventStatsAction;
 use HiEvents\Http\Actions\Events\UpdateEventAction;
 use HiEvents\Http\Actions\Events\UpdateEventStatusAction;
 use HiEvents\Http\Actions\EventSettings\EditEventSettingsAction;
 use HiEvents\Http\Actions\EventSettings\GetEventSettingsAction;
+use HiEvents\Http\Actions\EventSettings\GetPlatformFeePreviewAction;
+use HiEvents\Http\Actions\EmailTemplates\CreateOrganizerEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\CreateEventEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\UpdateOrganizerEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\UpdateEventEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\GetOrganizerEmailTemplatesAction;
+use HiEvents\Http\Actions\EmailTemplates\GetEventEmailTemplatesAction;
+use HiEvents\Http\Actions\EmailTemplates\DeleteOrganizerEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\DeleteEventEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\PreviewOrganizerEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\PreviewEventEmailTemplateAction;
+use HiEvents\Http\Actions\EmailTemplates\GetAvailableTokensAction;
+use HiEvents\Http\Actions\EmailTemplates\GetDefaultEmailTemplateAction;
 use HiEvents\Http\Actions\EventSettings\PartialEditEventSettingsAction;
+use HiEvents\Http\Actions\Images\CreateImageAction;
+use HiEvents\Http\Actions\Images\DeleteImageAction;
+use HiEvents\Http\Actions\Messages\CancelMessageAction;
+use HiEvents\Http\Actions\Messages\GetMessageRecipientsAction;
 use HiEvents\Http\Actions\Messages\GetMessagesAction;
 use HiEvents\Http\Actions\Messages\SendMessageAction;
 use HiEvents\Http\Actions\Orders\CancelOrderAction;
@@ -65,6 +92,7 @@ use HiEvents\Http\Actions\Orders\MessageOrderAction;
 use HiEvents\Http\Actions\Orders\Payment\RefundOrderAction;
 use HiEvents\Http\Actions\Orders\Payment\Stripe\CreatePaymentIntentActionPublic;
 use HiEvents\Http\Actions\Orders\Payment\Stripe\GetPaymentIntentActionPublic;
+use HiEvents\Http\Actions\Orders\Public\AbandonOrderActionPublic;
 use HiEvents\Http\Actions\Orders\Public\CompleteOrderActionPublic;
 use HiEvents\Http\Actions\Orders\Public\CreateOrderActionPublic;
 use HiEvents\Http\Actions\Orders\Public\DownloadOrderInvoicePublicAction;
@@ -72,11 +100,21 @@ use HiEvents\Http\Actions\Orders\Public\GetOrderActionPublic;
 use HiEvents\Http\Actions\Orders\Public\TransitionOrderToOfflinePaymentPublicAction;
 use HiEvents\Http\Actions\Orders\ResendOrderConfirmationAction;
 use HiEvents\Http\Actions\Organizers\CreateOrganizerAction;
+use HiEvents\Http\Actions\SelfService\EditAttendeePublicAction;
+use HiEvents\Http\Actions\SelfService\EditOrderPublicAction;
+use HiEvents\Http\Actions\SelfService\ResendAttendeeTicketPublicAction;
+use HiEvents\Http\Actions\SelfService\ResendOrderConfirmationPublicAction;
 use HiEvents\Http\Actions\Organizers\EditOrganizerAction;
 use HiEvents\Http\Actions\Organizers\GetOrganizerAction;
 use HiEvents\Http\Actions\Organizers\GetOrganizerEventsAction;
 use HiEvents\Http\Actions\Organizers\GetOrganizersAction;
 use HiEvents\Http\Actions\Organizers\GetPublicOrganizerAction;
+use HiEvents\Http\Actions\Organizers\Orders\GetOrganizerOrdersAction;
+use HiEvents\Http\Actions\Organizers\Public\SendOrganizerContactMessagePublicAction;
+use HiEvents\Http\Actions\Organizers\Settings\GetOrganizerSettingsAction;
+use HiEvents\Http\Actions\Organizers\Settings\PartialUpdateOrganizerSettingsAction;
+use HiEvents\Http\Actions\Organizers\Stats\GetOrganizerStatsAction;
+use HiEvents\Http\Actions\Organizers\UpdateOrganizerStatusAction;
 use HiEvents\Http\Actions\ProductCategories\CreateProductCategoryAction;
 use HiEvents\Http\Actions\ProductCategories\DeleteProductCategoryAction;
 use HiEvents\Http\Actions\ProductCategories\EditProductCategoryAction;
@@ -103,7 +141,12 @@ use HiEvents\Http\Actions\Questions\GetQuestionAction;
 use HiEvents\Http\Actions\Questions\GetQuestionsAction;
 use HiEvents\Http\Actions\Questions\GetQuestionsPublicAction;
 use HiEvents\Http\Actions\Questions\SortQuestionsAction;
+use HiEvents\Http\Actions\Reports\ExportOrganizerReportAction;
+use HiEvents\Http\Actions\Reports\GetOrganizerReportAction;
 use HiEvents\Http\Actions\Reports\GetReportAction;
+use HiEvents\Http\Actions\Sitemap\GetSitemapEventsAction;
+use HiEvents\Http\Actions\Sitemap\GetSitemapIndexAction;
+use HiEvents\Http\Actions\Sitemap\GetSitemapOrganizersAction;
 use HiEvents\Http\Actions\TaxesAndFees\CreateTaxOrFeeAction;
 use HiEvents\Http\Actions\TaxesAndFees\DeleteTaxOrFeeAction;
 use HiEvents\Http\Actions\TaxesAndFees\EditTaxOrFeeAction;
@@ -111,6 +154,7 @@ use HiEvents\Http\Actions\TaxesAndFees\GetTaxOrFeeAction;
 use HiEvents\Http\Actions\Users\CancelEmailChangeAction;
 use HiEvents\Http\Actions\Users\ConfirmEmailAddressAction;
 use HiEvents\Http\Actions\Users\ConfirmEmailChangeAction;
+use HiEvents\Http\Actions\Users\ConfirmEmailWithCodeAction;
 use HiEvents\Http\Actions\Users\CreateUserAction;
 use HiEvents\Http\Actions\Users\DeleteInvitationAction;
 use HiEvents\Http\Actions\Users\GetMeAction;
@@ -120,6 +164,34 @@ use HiEvents\Http\Actions\Users\ResendEmailConfirmationAction;
 use HiEvents\Http\Actions\Users\ResendInvitationAction;
 use HiEvents\Http\Actions\Users\UpdateMeAction;
 use HiEvents\Http\Actions\Users\UpdateUserAction;
+use HiEvents\Http\Actions\Admin\Accounts\AssignConfigurationAction;
+use HiEvents\Http\Actions\Admin\Accounts\GetAccountAction as GetAdminAccountAction;
+use HiEvents\Http\Actions\Admin\Accounts\GetAllAccountsAction as GetAllAdminAccountsAction;
+use HiEvents\Http\Actions\Admin\Accounts\UpdateAccountVatSettingAction as UpdateAdminAccountVatSettingAction;
+use HiEvents\Http\Actions\Admin\Configurations\CreateConfigurationAction;
+use HiEvents\Http\Actions\Admin\Configurations\DeleteConfigurationAction;
+use HiEvents\Http\Actions\Admin\Configurations\GetAllConfigurationsAction;
+use HiEvents\Http\Actions\Admin\Configurations\UpdateConfigurationAction;
+use HiEvents\Http\Actions\Admin\Events\GetAllEventsAction as GetAllAdminEventsAction;
+use HiEvents\Http\Actions\Admin\Events\GetUpcomingEventsAction;
+use HiEvents\Http\Actions\Admin\FailedJobs\DeleteAllFailedJobsAction;
+use HiEvents\Http\Actions\Admin\FailedJobs\DeleteFailedJobAction;
+use HiEvents\Http\Actions\Admin\FailedJobs\GetAllFailedJobsAction;
+use HiEvents\Http\Actions\Admin\FailedJobs\RetryAllFailedJobsAction;
+use HiEvents\Http\Actions\Admin\FailedJobs\RetryFailedJobAction;
+use HiEvents\Http\Actions\Admin\Messages\ApproveMessageAction;
+use HiEvents\Http\Actions\Admin\Messages\GetAllMessagesAction as GetAllAdminMessagesAction;
+use HiEvents\Http\Actions\Admin\GetMessagingTiersAction;
+use HiEvents\Http\Actions\Admin\Accounts\UpdateAccountMessagingTierAction;
+use HiEvents\Http\Actions\Admin\Orders\GetAllOrdersAction;
+use HiEvents\Http\Actions\Admin\Attribution\GetUtmAttributionStatsAction;
+use HiEvents\Http\Actions\Admin\Stats\GetAdminDashboardDataAction;
+use HiEvents\Http\Actions\Admin\Stats\GetAdminStatsAction;
+use HiEvents\Http\Actions\Admin\Users\GetAllUsersAction;
+use HiEvents\Http\Actions\Admin\Users\StartImpersonationAction;
+use HiEvents\Http\Actions\Admin\Users\StopImpersonationAction;
+use HiEvents\Http\Actions\TicketLookup\GetOrdersByLookupTokenAction;
+use HiEvents\Http\Actions\TicketLookup\SendTicketLookupEmailAction;
 use HiEvents\Http\Actions\Webhooks\CreateWebhookAction;
 use HiEvents\Http\Actions\Webhooks\DeleteWebhookAction;
 use HiEvents\Http\Actions\Webhooks\EditWebhookAction;
@@ -134,18 +206,18 @@ $router = app()->get('router');
 $router->prefix('/auth')->group(
     function (Router $router): void {
         // Auth
-        $router->post('/login', LoginAction::class)->name('login');
-        $router->post('/logout', LogoutAction::class);
-        $router->post('/register', CreateAccountAction::class);
-        $router->post('/forgot-password', ForgotPasswordAction::class);
+        $router->post('/login', LoginAction::class)->name('auth.login');
+        $router->post('/logout', LogoutAction::class)->name('auth.logout');
+        $router->post('/register', CreateAccountAction::class)->name('auth.register');
+        $router->post('/forgot-password', ForgotPasswordAction::class)->name('auth.forgot-password');
 
         // Invitations
-        $router->get('/invitation/{invite_token}', GetUserInvitationAction::class);
-        $router->post('/invitation/{invite_token}', AcceptInvitationAction::class);
+        $router->get('/invitation/{invite_token}', GetUserInvitationAction::class)->name('auth.invitation');
+        $router->post('/invitation/{invite_token}', AcceptInvitationAction::class)->name('auth.accept-invitation');
 
         // Reset Passwords
-        $router->get('/reset-password/{reset_token}', ValidateResetPasswordTokenAction::class);
-        $router->post('/reset-password/{reset_token}', ResetPasswordAction::class);
+        $router->get('/reset-password/{reset_token}', ValidateResetPasswordTokenAction::class)->name('auth.validate-reset-password-token');
+        $router->post('/reset-password/{reset_token}', ResetPasswordAction::class)->name('auth.reset-password');
     }
 );
 
@@ -165,25 +237,47 @@ $router->middleware(['auth:api'])->group(
         $router->get('/users', GetUsersAction::class);
         $router->get('/users/{user_id}', GetUserAction::class);
         $router->put('/users/{user_id}', UpdateUserAction::class);
-        $router->post('/users/{user_id}/email-change/{token}', ConfirmEmailChangeAction::class);
+        $router->post('/users/{user_id}/email-change/{changeToken}', ConfirmEmailChangeAction::class);
         $router->post('/users/{user_id}/invitation', ResendInvitationAction::class);
         $router->delete('/users/{user_id}/invitation', DeleteInvitationAction::class);
         $router->delete('/users/{user_id}/email-change', CancelEmailChangeAction::class);
-        $router->post('/users/{user_id}/confirm-email/{token}', ConfirmEmailAddressAction::class);
+        $router->post('/users/{user_id}/confirm-email/{resetToken}', ConfirmEmailAddressAction::class);
         $router->post('/users/{user_id}/resend-email-confirmation', ResendEmailConfirmationAction::class);
+        $router->post('/users/{user_id}/confirm-email-with-code', ConfirmEmailWithCodeAction::class);
 
         // Accounts
         $router->get('/accounts/{account_id?}', GetAccountAction::class);
         $router->put('/accounts/{account_id?}', UpdateAccountAction::class);
+        $router->get('/accounts/{account_id}/stripe/connect_accounts', GetStripeConnectAccountsAction::class);
         $router->post('/accounts/{account_id}/stripe/connect', CreateStripeConnectAccountAction::class);
+
+        // VAT Settings
+        $router->get('/accounts/{account_id}/vat-settings', GetAccountVatSettingAction::class);
+        $router->post('/accounts/{account_id}/vat-settings', UpsertAccountVatSettingAction::class);
 
         // Organizers
         $router->post('/organizers', CreateOrganizerAction::class);
         // This is POST instead of PUT because you can't upload files via PUT in PHP (at least not easily)
         $router->post('/organizers/{organizer_id}', EditOrganizerAction::class);
+        $router->put('/organizers/{organizer_id}/status', UpdateOrganizerStatusAction::class);
         $router->get('/organizers', GetOrganizersAction::class);
         $router->get('/organizers/{organizer_id}', GetOrganizerAction::class);
         $router->get('/organizers/{organizer_id}/events', GetOrganizerEventsAction::class);
+        $router->get('/organizers/{organizer_id}/stats', GetOrganizerStatsAction::class);
+        $router->get('/organizers/{organizer_id}/orders', GetOrganizerOrdersAction::class);
+        $router->get('/organizers/{organizer_id}/settings', GetOrganizerSettingsAction::class);
+        $router->patch('/organizers/{organizer_id}/settings', PartialUpdateOrganizerSettingsAction::class);
+        $router->get('/organizers/{organizer_id}/reports/{report_type}', GetOrganizerReportAction::class);
+        $router->get('/organizers/{organizer_id}/reports/{report_type}/export', ExportOrganizerReportAction::class);
+
+        // Email Templates - Organizer level
+        $router->get('/organizers/{organizerId}/email-templates', GetOrganizerEmailTemplatesAction::class);
+        $router->get('/email-templates/defaults', GetDefaultEmailTemplateAction::class);
+        $router->post('/organizers/{organizerId}/email-templates', CreateOrganizerEmailTemplateAction::class);
+        $router->put('/organizers/{organizerId}/email-templates/{templateId}', UpdateOrganizerEmailTemplateAction::class);
+        $router->delete('/organizers/{organizerId}/email-templates/{templateId}', DeleteOrganizerEmailTemplateAction::class);
+        $router->post('/organizers/{organizerId}/email-templates/preview', PreviewOrganizerEmailTemplateAction::class);
+        $router->get('/email-templates/tokens/{templateType}', GetAvailableTokensAction::class);
 
         // Taxes and Fees
         $router->post('/accounts/{account_id}/taxes-and-fees', CreateTaxOrFeeAction::class);
@@ -215,8 +309,14 @@ $router->middleware(['auth:api'])->group(
         $router->get('/events/{event_id}/products', GetProductsAction::class);
 
         // Stats
-        $router->get('/events/{event_id}/check_in_stats', GetEventCheckInStatsAction::class);
         $router->get('/events/{event_id}/stats', GetEventStatsAction::class);
+
+        // Email Templates - Event level
+        $router->get('/events/{eventId}/email-templates', GetEventEmailTemplatesAction::class);
+        $router->post('/events/{eventId}/email-templates', CreateEventEmailTemplateAction::class);
+        $router->put('/events/{eventId}/email-templates/{templateId}', UpdateEventEmailTemplateAction::class);
+        $router->delete('/events/{eventId}/email-templates/{templateId}', DeleteEventEmailTemplateAction::class);
+        $router->post('/events/{eventId}/email-templates/preview', PreviewEventEmailTemplateAction::class);
 
         // Attendees
         $router->post('/events/{event_id}/attendees', CreateAttendeeAction::class);
@@ -263,14 +363,25 @@ $router->middleware(['auth:api'])->group(
         $router->get('/events/{event_id}/promo-codes/{promo_code_id}', GetPromoCodeAction::class);
         $router->delete('/events/{event_id}/promo-codes/{promo_code_id}', DeletePromoCodeAction::class);
 
+        // Affiliates
+        $router->post('/events/{event_id}/affiliates', CreateAffiliateAction::class);
+        $router->put('/events/{event_id}/affiliates/{affiliate_id}', UpdateAffiliateAction::class);
+        $router->get('/events/{event_id}/affiliates', GetAffiliatesAction::class);
+        $router->get('/events/{event_id}/affiliates/{affiliate_id}', GetAffiliateAction::class);
+        $router->delete('/events/{event_id}/affiliates/{affiliate_id}', DeleteAffiliateAction::class);
+        $router->post('/events/{event_id}/affiliates/export', ExportAffiliatesAction::class);
+
         // Messages
         $router->post('/events/{event_id}/messages', SendMessageAction::class);
         $router->get('/events/{event_id}/messages', GetMessagesAction::class);
+        $router->post('/events/{event_id}/messages/{message_id}/cancel', CancelMessageAction::class);
+        $router->get('/events/{event_id}/messages/{message_id}/recipients', GetMessageRecipientsAction::class);
 
         // Event Settings
         $router->get('/events/{event_id}/settings', GetEventSettingsAction::class);
         $router->put('/events/{event_id}/settings', EditEventSettingsAction::class);
         $router->patch('/events/{event_id}/settings', PartialEditEventSettingsAction::class);
+        $router->get('/events/{event_id}/settings/platform-fee-preview', GetPlatformFeePreviewAction::class);
 
         // Capacity Assignments
         $router->post('/events/{event_id}/capacity-assignments', CreateCapacityAssignmentAction::class);
@@ -296,6 +407,47 @@ $router->middleware(['auth:api'])->group(
 
         // Reports
         $router->get('/events/{event_id}/reports/{report_type}', GetReportAction::class);
+
+        // Images
+        $router->post('/images', CreateImageAction::class);
+        $router->delete('/images/{image_id}', DeleteImageAction::class);
+    }
+);
+
+$router->prefix('/admin')->middleware(['auth:api'])->group(
+    function (Router $router): void {
+        $router->get('/stats', GetAdminStatsAction::class);
+        $router->get('/dashboard', GetAdminDashboardDataAction::class);
+        $router->get('/attribution/stats', GetUtmAttributionStatsAction::class);
+        $router->get('/accounts', GetAllAdminAccountsAction::class);
+        $router->get('/accounts/{account_id}', GetAdminAccountAction::class);
+        $router->put('/accounts/{account_id}/vat-settings', UpdateAdminAccountVatSettingAction::class);
+        $router->put('/accounts/{account_id}/configuration', AssignConfigurationAction::class);
+        $router->get('/configurations', GetAllConfigurationsAction::class);
+        $router->post('/configurations', CreateConfigurationAction::class);
+        $router->put('/configurations/{configuration_id}', UpdateConfigurationAction::class);
+        $router->delete('/configurations/{configuration_id}', DeleteConfigurationAction::class);
+        $router->get('/users', GetAllUsersAction::class);
+        $router->get('/events', GetAllAdminEventsAction::class);
+        $router->get('/events/upcoming', GetUpcomingEventsAction::class);
+        $router->get('/orders', GetAllOrdersAction::class);
+        $router->post('/impersonate/{user_id}', StartImpersonationAction::class);
+        $router->post('/stop-impersonation', StopImpersonationAction::class);
+
+        // Failed Jobs
+        $router->get('/failed-jobs', GetAllFailedJobsAction::class);
+        $router->delete('/failed-jobs/{jobId}', DeleteFailedJobAction::class);
+        $router->delete('/failed-jobs', DeleteAllFailedJobsAction::class);
+        $router->post('/failed-jobs/{jobId}/retry', RetryFailedJobAction::class);
+        $router->post('/failed-jobs/retry-all', RetryAllFailedJobsAction::class);
+
+        // Messages
+        $router->get('/messages', GetAllAdminMessagesAction::class);
+        $router->post('/messages/{message_id}/approve', ApproveMessageAction::class);
+
+        // Messaging Tiers
+        $router->get('/messaging-tiers', GetMessagingTiersAction::class);
+        $router->put('/accounts/{account_id}/messaging-tier', UpdateAccountMessagingTierAction::class);
     }
 );
 
@@ -310,6 +462,7 @@ $router->prefix('/public')->group(
         // Organizers
         $router->get('/organizers/{organizer_id}', GetPublicOrganizerAction::class);
         $router->get('/organizers/{organizer_id}/events', GetOrganizerEventsPublicAction::class);
+        $router->post('/organizers/{organizer_id}/contact', SendOrganizerContactMessagePublicAction::class);
 
         // Products
         $router->get('/events/{event_id}/products', GetEventPublicAction::class);
@@ -318,6 +471,7 @@ $router->prefix('/public')->group(
         $router->post('/events/{event_id}/order', CreateOrderActionPublic::class);
         $router->put('/events/{event_id}/order/{order_short_id}', CompleteOrderActionPublic::class);
         $router->get('/events/{event_id}/order/{order_short_id}', GetOrderActionPublic::class);
+        $router->post('/events/{event_id}/order/{order_short_id}/abandon', AbandonOrderActionPublic::class);
         $router->post('/events/{event_id}/order/{order_short_id}/await-offline-payment', TransitionOrderToOfflinePaymentPublicAction::class);
         $router->get('/events/{event_id}/order/{order_short_id}/invoice', DownloadOrderInvoicePublicAction::class);
 
@@ -340,8 +494,30 @@ $router->prefix('/public')->group(
         // Check-In
         $router->get('/check-in-lists/{check_in_list_short_id}', GetCheckInListPublicAction::class);
         $router->get('/check-in-lists/{check_in_list_short_id}/attendees', GetCheckInListAttendeesPublicAction::class);
+        $router->get('/check-in-lists/{check_in_list_short_id}/attendees/{attendee_public_id}', GetCheckInListAttendeePublicAction::class);
         $router->post('/check-in-lists/{check_in_list_short_id}/check-ins', CreateAttendeeCheckInPublicAction::class);
         $router->delete('/check-in-lists/{check_in_list_short_id}/check-ins/{check_in_short_id}', DeleteAttendeeCheckInPublicAction::class);
+
+        // Color themes
+        $router->get('/color-themes', GetColorThemesAction::class);
+
+        // Ticket Lookup
+        $router->post('/ticket-lookup', SendTicketLookupEmailAction::class);
+        $router->get('/ticket-lookup/{token}', GetOrdersByLookupTokenAction::class);
+
+        // Self-service order and attendee edits
+        $router->prefix('/events/{event_id}/order/{order_short_id}')->group(function (Router $router): void {
+            $router->patch('/', EditOrderPublicAction::class)->middleware('throttle:self-service-edit');
+            $router->post('/resend-confirmation', ResendOrderConfirmationPublicAction::class)->middleware('throttle:self-service-email');
+
+            $router->patch('/attendees/{attendee_short_id}', EditAttendeePublicAction::class)->middleware('throttle:self-service-edit');
+            $router->post('/attendees/{attendee_short_id}/resend-ticket', ResendAttendeeTicketPublicAction::class)->middleware('throttle:self-service-email');
+        });
+
+        // Sitemap
+        $router->get('/sitemap.xml', GetSitemapIndexAction::class);
+        $router->get('/sitemap-events-{page}.xml', GetSitemapEventsAction::class)->where('page', '[0-9]+');
+        $router->get('/sitemap-organizers-{page}.xml', GetSitemapOrganizersAction::class)->where('page', '[0-9]+');
     }
 );
 

@@ -5,6 +5,7 @@ namespace HiEvents\Services\Infrastructure\Authorization;
 use HiEvents\DomainObjects\AccountDomainObject;
 use HiEvents\DomainObjects\Enums\Role;
 use HiEvents\DomainObjects\EventDomainObject;
+use HiEvents\DomainObjects\ImageDomainObject;
 use HiEvents\DomainObjects\OrganizerDomainObject;
 use HiEvents\DomainObjects\Status\UserStatus;
 use HiEvents\DomainObjects\TaxAndFeesDomainObject;
@@ -13,6 +14,7 @@ use HiEvents\Exceptions\UnauthorizedException;
 use HiEvents\Repository\Interfaces\AccountRepositoryInterface;
 use HiEvents\Repository\Interfaces\AccountUserRepositoryInterface;
 use HiEvents\Repository\Interfaces\EventRepositoryInterface;
+use HiEvents\Repository\Interfaces\ImageRepositoryInterface;
 use HiEvents\Repository\Interfaces\OrganizerRepositoryInterface;
 use HiEvents\Repository\Interfaces\TaxAndFeeRepositoryInterface;
 use HiEvents\Repository\Interfaces\UserRepositoryInterface;
@@ -35,7 +37,13 @@ readonly class IsAuthorizedService
      */
     public function validateUserRole(Role $minimumRole, UserDomainObject $authUser): void
     {
-        if ($minimumRole === Role::ADMIN && $authUser->getCurrentAccountUser()->getRole() !== Role::ADMIN->name) {
+        if ($minimumRole === Role::ADMIN
+            && in_array($authUser->getCurrentAccountUser()->getRole(), [Role::SUPERADMIN->name, Role::ADMIN->name], true) === false
+        ) {
+            throw new UnauthorizedException(__('You are not authorized to perform this action.'));
+        }
+
+        if ($minimumRole === Role::SUPERADMIN && $authUser->getCurrentAccountUser()->getRole() !== Role::SUPERADMIN->name) {
             throw new UnauthorizedException(__('You are not authorized to perform this action.'));
         }
     }
@@ -57,12 +65,14 @@ readonly class IsAuthorizedService
             UserDomainObject::class => $this->app->make(UserRepositoryInterface::class),
             TaxAndFeesDomainObject::class => $this->app->make(TaxAndFeeRepositoryInterface::class),
             OrganizerDomainObject::class => $this->app->make(OrganizerRepositoryInterface::class),
+            ImageDomainObject::class => $this->app->make(ImageRepositoryInterface::class),
         };
 
         $entity = $repository->findById($entityId);
 
         $result = match ($entityType) {
             EventDomainObject::class,
+            ImageDomainObject::class,
             OrganizerDomainObject::class => $entity?->getAccountId() === $authAccountId,
             AccountDomainObject::class => $entity?->getId() === $authAccountId,
             UserDomainObject::class => $this->validateUserUpdate($entity, $authAccountId),

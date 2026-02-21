@@ -43,7 +43,9 @@ export const Products = () => {
 
     return (
         <PageBody>
-            <PageTitle>{t`Products`}</PageTitle>
+            <PageTitle
+                subheading={t`Create and configure tickets and merchandise for sale.`}
+            >{t`Tickets & Products`}</PageTitle>
 
             <ToolBar
                 searchComponent={() => (
@@ -83,7 +85,7 @@ export const Products = () => {
                             }
                             onClick={() => openCreateProduct(undefined)}
                         >
-                            {t`Product`}
+                            {t`Ticket or Product`}
                         </Menu.Item>
                         <Menu.Item
                             leftSection={
@@ -93,7 +95,7 @@ export const Products = () => {
                             }
                             onClick={openCreateProductCategoryModal}
                         >
-                            {t`Product Category`}
+                            {t`Category`}
                         </Menu.Item>
                     </Menu.Dropdown>
                 </Menu>

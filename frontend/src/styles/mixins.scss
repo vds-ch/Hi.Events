@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "sass:math";
+@use "sass:color";
+
 $breakpoints: (
         'xs': 320px,
         'sm': 576px,
@@ -9,8 +13,8 @@ $breakpoints: (
 
 // Option to specify if the query should be a container query
 @mixin respond-above($breakpoint, $container-query: false) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $value: map-get($breakpoints, $breakpoint);
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
 
     @if $container-query {
       // Use container query
@@ -30,8 +34,8 @@ $breakpoints: (
 
 // Option to specify if the query should be a container query
 @mixin respond-below($breakpoint, $container-query: false) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $value: map-get($breakpoints, $breakpoint) - 1px;
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint) - 1px;
 
     @if $container-query {
       // Use container query
@@ -58,7 +62,7 @@ $breakpoints: (
 
 @mixin scrollbar() {
   scrollbar-width: thin;
-  scrollbar-color: var(--tk-secondary) transparent;
+  scrollbar-color: var(--hi-scrollbar-thumb) transparent;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -72,10 +76,41 @@ $breakpoints: (
   }
 
   &:hover::-webkit-scrollbar-thumb {
-    background-color: var(--tk-secondary);
+    background-color: var(--hi-scrollbar-thumb);
   }
 
   &::-webkit-scrollbar-track {
     background: transparent;
+  }
+}
+
+@function luminance($color) {
+  $red: color.red($color) / 255;
+  $green: color.green($color) / 255;
+  $blue: color.blue($color) / 255;
+  
+  // Apply gamma correction
+  $red: if($red <= 0.03928, $red / 12.92, math.pow(($red + 0.055) / 1.055, 2.4));
+  $green: if($green <= 0.03928, $green / 12.92, math.pow(($green + 0.055) / 1.055, 2.4));
+  $blue: if($blue <= 0.03928, $blue / 12.92, math.pow(($blue + 0.055) / 1.055, 2.4));
+  
+  @return 0.2126 * $red + 0.7152 * $green + 0.0722 * $blue;
+}
+
+@function contrast-color($bg-color) {
+  @if luminance($bg-color) > 0.5 {
+    @return #000000;
+  } @else {
+    @return #ffffff;
+  }
+}
+
+@function get-contrast-color($bg-color) {
+  $lightness: color.lightness($bg-color);
+  
+  @if $lightness > 50% {
+    @return #000000; // Dark text for light backgrounds
+  } @else {
+    @return #ffffff; // Light text for dark backgrounds
   }
 }

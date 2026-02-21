@@ -1,20 +1,26 @@
 .container {
-  margin-bottom: var(--tk-spacing-xl);
+  margin-bottom: var(--hi-spacing-xl);
 
   .tabsCard {
     padding: 0;
   }
 
   .emailChangeAlert {
-    margin-bottom: var(--tk-spacing-lg);
+    margin-bottom: var(--hi-spacing-lg);
   }
 
   .tabWrapper {
-    padding: var(--tk-spacing-xl);
+    padding: var(--hi-spacing-xl);
+  }
+
+  .fieldsetLegend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 }
 
 .emailNotVerified {
-  margin-bottom: var(--tk-spacing-lg);
+  margin-bottom: var(--hi-spacing-lg);
 }
 

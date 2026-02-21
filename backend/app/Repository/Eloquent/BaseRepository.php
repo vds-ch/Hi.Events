@@ -21,9 +21,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use TypeError;
 
 /**
- * @template T
+ * @template T of DomainObjectInterface
  * @implements RepositoryInterface<T>
  */
 abstract class BaseRepository implements RepositoryInterface
@@ -62,11 +63,14 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function all(array $columns = self::DEFAULT_COLUMNS): Collection
     {
-        return $this->handleResults($this->model->all($columns));
+        $models = $this->model->all($columns);
+        $this->resetModel();
+
+        return $this->handleResults($models);
     }
 
     public function paginate(
-        int   $limit = null,
+        ?int  $limit = null,
         array $columns = self::DEFAULT_COLUMNS
     ): LengthAwarePaginator
     {
@@ -78,9 +82,9 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function paginateWhere(
         array $where,
-        int   $limit = null,
+        ?int  $limit = null,
         array $columns = self::DEFAULT_COLUMNS,
-        int   $page = null,
+        ?int  $page = null,
     ): LengthAwarePaginator
     {
         $this->applyConditions($where);
@@ -96,7 +100,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function simplePaginateWhere(
         array $where,
-        int   $limit = null,
+        ?int  $limit = null,
         array $columns = self::DEFAULT_COLUMNS,
     ): Paginator
     {
@@ -109,7 +113,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function paginateEloquentRelation(
         Relation $relation,
-        int      $limit = null,
+        ?int     $limit = null,
         array    $columns = self::DEFAULT_COLUMNS
     ): LengthAwarePaginator
     {
@@ -121,13 +125,16 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function findById(int $id, array $columns = self::DEFAULT_COLUMNS): DomainObjectInterface
     {
-        return $this->handleSingleResult($this->model->findOrFail($id, $columns));
+        $model = $this->model->findOrFail($id, $columns);
+        $this->resetModel();
+
+        return $this->handleSingleResult($model);
     }
 
     public function findFirstByField(
-        string $field,
-        string $value = null,
-        array  $columns = ['*']
+        string  $field,
+        ?string $value = null,
+        array   $columns = ['*']
     ): ?DomainObjectInterface
     {
         $model = $this->model->where($field, '=', $value)->first($columns);
@@ -138,7 +145,10 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function findFirst(int $id, array $columns = self::DEFAULT_COLUMNS): ?DomainObjectInterface
     {
-        return $this->handleSingleResult($this->model->findOrFail($id, $columns));
+        $model = $this->model->findOrFail($id, $columns);
+        $this->resetModel();
+
+        return $this->handleSingleResult($model);
     }
 
     public function findWhere(
@@ -299,6 +309,15 @@ abstract class BaseRepository implements RepositoryInterface
         return $deleted;
     }
 
+    public function countWhere(array $conditions): int
+    {
+        $this->applyConditions($conditions);
+        $count = $this->model->count();
+        $this->resetModel();
+
+        return $count;
+    }
+
     public function loadRelation(string|Relationship $relationship): static
     {
         if (is_string($relationship)) {
@@ -325,19 +344,46 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->model = $this->model->where($value);
             } elseif (is_array($value)) {
                 [$field, $condition, $val] = $value;
-                $this->model = $this->model->where($field, $condition, $val);
+                $condition = strtolower($condition);
+
+                switch ($condition) {
+                    case 'in':
+                        if (is_array($val)) {
+                            $this->model = $this->model->whereIn($field, $val);
+                        }
+                        break;
+
+                    case 'not in':
+                        if (is_array($val)) {
+                            $this->model = $this->model->whereNotIn($field, $val);
+                        }
+                        break;
+
+                    case 'null':
+                        $this->model = $this->model->whereNull($field);
+                        break;
+
+                    case 'not null':
+                        $this->model = $this->model->whereNotNull($field);
+                        break;
+
+                    default:
+                        $this->model = $this->model->where($field, $condition, $val);
+                        break;
+                }
             } else {
+                // Simple equality condition
                 $this->model = $this->model->where($field, '=', $value);
             }
         }
     }
 
-    protected function initModel(string $model = null): Model
+    protected function initModel(?string $model = null): Model
     {
         return $this->app->make($model ?: $this->getModel());
     }
 
-    protected function handleResults($results, string $domainObjectOverride = null)
+    protected function handleResults($results, ?string $domainObjectOverride = null)
     {
         $domainObjects = [];
         foreach ($results as $result) {
@@ -359,7 +405,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     protected function handleSingleResult(
         ?BaseModel $model,
-        string     $domainObjectOverride = null
+        ?string    $domainObjectOverride = null
     ): ?DomainObjectInterface
     {
         if (!$model) {
@@ -369,10 +415,14 @@ abstract class BaseRepository implements RepositoryInterface
         return $this->hydrateDomainObjectFromModel($model, $domainObjectOverride);
     }
 
-    protected function applyFilterFields(QueryParamsDTO $params, array $allowedFilterFields = []): void
+    protected function applyFilterFields(
+        QueryParamsDTO $params,
+        array $allowedFilterFields = [],
+        ?string $prefix = null,
+    ): void
     {
         if ($params->filter_fields && $params->filter_fields->isNotEmpty()) {
-            $params->filter_fields->each(function ($filterField) use ($allowedFilterFields) {
+            $params->filter_fields->each(function ($filterField) use ($prefix, $allowedFilterFields) {
                 if (!in_array($filterField->field, $allowedFilterFields, true)) {
                     return;
                 }
@@ -394,6 +444,8 @@ abstract class BaseRepository implements RepositoryInterface
                     sprintf('Operator %s is not supported', $filterField->operator)
                 );
 
+                $field = $prefix ? $prefix . '.' . $filterField->field : $filterField->field;
+
                 // Special handling for IN operator
                 if ($operator === 'IN') {
                     // Ensure value is array or convert comma-separated string to array
@@ -402,12 +454,12 @@ abstract class BaseRepository implements RepositoryInterface
                         : explode(',', $filterField->value);
 
                     $this->model = $this->model->whereIn(
-                        column: $filterField->field,
+                        column: $field,
                         values: $value
                     );
                 } else {
                     $this->model = $this->model->where(
-                        column: $filterField->field,
+                        column: $field,
                         operator: $operator,
                         value: $isNull ? null : $filterField->value,
                     );
@@ -440,9 +492,9 @@ abstract class BaseRepository implements RepositoryInterface
      * @todo use hydrate method from AbstractDomainObject
      */
     private function hydrateDomainObjectFromModel(
-        Model  $model,
-        string $domainObjectOverride = null,
-        ?array $relationships = null,
+        Model   $model,
+        ?string $domainObjectOverride = null,
+        ?array  $relationships = null,
     ): DomainObjectInterface
     {
         /** @var DomainObjectInterface $object */
@@ -452,7 +504,22 @@ abstract class BaseRepository implements RepositoryInterface
         foreach ($model->attributesToArray() as $attribute => $value) {
             $method = 'set' . ucfirst(Str::camel($attribute));
             if (is_callable(array($object, $method))) {
-                $object->$method($value);
+                try {
+                    $object->$method($value);
+                } catch (TypeError $e) {
+                    throw new TypeError(
+                        sprintf(
+                            'Type error when calling %s::%s with value %s: %s',
+                            get_class($object),
+                            $method,
+                            var_export($value, true),
+                            $e->getMessage()
+                        ),
+                        (int)$e->getCode(),
+                        $e
+                    );
+                }
+
             }
         }
 

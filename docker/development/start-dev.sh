@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMPOSE_CMD="docker-compose -f docker-compose.dev.yml"
+COMPOSE_CMD="docker compose -f docker-compose.dev.yml"
 CERTS_FLAG="$1"
 
 RED='\033[0;31m'
@@ -85,7 +85,7 @@ fi
 
 $COMPOSE_CMD exec backend php artisan key:generate
 $COMPOSE_CMD exec backend php artisan migrate
-$COMPOSE_CMD exec backend chmod -R 775 /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
+$COMPOSE_CMD exec backend chmod -R 775 /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
 $COMPOSE_CMD exec backend php artisan storage:link
 
 if [ $? -ne 0 ]; then

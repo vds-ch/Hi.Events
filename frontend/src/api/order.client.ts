@@ -46,6 +46,7 @@ export interface ProductFormValue {
 export interface ProductFormPayload {
     products?: ProductFormValue[],
     promo_code: string | null,
+    affiliate_code?: string | null,
     session_identifier?: string,
 }
 
@@ -78,8 +79,10 @@ export const orderClient = {
         return response.data;
     },
 
-    cancel: async (eventId: IdParam, orderId: IdParam) => {
-        const response = await api.post<GenericDataResponse<Order>>('events/' + eventId + '/orders/' + orderId + '/cancel');
+    cancel: async (eventId: IdParam, orderId: IdParam, refund?: boolean) => {
+        const response = await api.post<GenericDataResponse<Order>>('events/' + eventId + '/orders/' + orderId + '/cancel', {
+            refund: refund ?? false
+        });
         return response.data;
     },
 
@@ -116,8 +119,24 @@ export const orderClientPublic = {
         return response.data;
     },
 
-    findByShortId: async (eventId: number, orderShortId: string, includes: string[] = []) => {
-        const response = await publicApi.get<GenericDataResponse<Order>>(`events/${eventId}/order/${orderShortId}?include=${includes.join(',')}`);
+    findByShortId: async (
+        eventId: number,
+        orderShortId: string,
+        includes: string[] = [],
+        sessionIdentifier?: string
+    ) => {
+        const query = new URLSearchParams();
+        if (includes.length > 0) {
+            query.append("include", includes.join(","));
+        }
+        if (sessionIdentifier) {
+            query.append("session_identifier", sessionIdentifier);
+        }
+
+        const response = await publicApi.get<GenericDataResponse<Order>>(
+            `events/${eventId}/order/${orderShortId}?${query.toString()}`
+        );
+
         return response.data;
     },
 
@@ -125,11 +144,13 @@ export const orderClientPublic = {
         return await publicApi.get<StripePaymentIntent>(`events/${eventId}/order/${orderShortId}/stripe/payment_intent`);
     },
 
-    createStripePaymentIntent: async (eventId: number, orderShortId: string, sessionIdentifier: string) => {
+    createStripePaymentIntent: async (eventId: number, orderShortId: string) => {
         const response = await publicApi.post<{
             client_secret: string,
             account_id?: string,
-        }>(`events/${eventId}/order/${orderShortId}/stripe/payment_intent?session_identifier=${sessionIdentifier}`);
+            public_key: string,
+            stripe_platform?: string,
+        }>(`events/${eventId}/order/${orderShortId}/stripe/payment_intent`);
         return response.data;
     },
 
@@ -153,5 +174,10 @@ export const orderClientPublic = {
         });
 
         return new Blob([response.data]);
+    },
+
+    abandonOrder: async (eventId: IdParam, orderShortId: IdParam) => {
+        const response = await publicApi.post<GenericDataResponse<Order>>(`events/${eventId}/order/${orderShortId}/abandon`);
+        return response.data;
     },
 }

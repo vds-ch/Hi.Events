@@ -10,6 +10,7 @@ export interface UserMeRequest {
     password_confirmation: string;
     password_current: string;
     locale: string;
+    marketing_opt_in?: boolean;
 }
 
 export interface UpdateUserRequest {
@@ -66,6 +67,10 @@ export const userClient = {
     },
     resendConfirmation: async (userId: IdParam) => {
         const response = await api.post(`users/${userId}/resend-email-confirmation`);
+        return response.data;
+    },
+    confirmEmailAddressWithCode: async (userId: IdParam, code: IdParam) => {
+        const response = await api.post(`users/${userId}/confirm-email-with-code`, {code});
         return response.data;
     },
 };

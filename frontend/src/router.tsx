@@ -1,9 +1,10 @@
 import {Navigate, RouteObject} from "react-router";
 import ErrorPage from "./error-page.tsx";
-import {eventsClientPublic} from "./api/event.client.ts";
-import {promoCodeClientPublic} from "./api/promo-code.client.ts";
 import {useEffect, useState} from "react";
 import {useGetMe} from "./queries/useGetMe.ts";
+import {publicEventRouteLoader} from "./routeLoaders/publicEventRouteLoader.ts";
+import {publicOrganizerRouteLoader} from "./routeLoaders/publicOrganizerRouteLoader.ts";
+import {organizerPreviewRouteLoader} from "./routeLoaders/organizerPreviewRouteLoader.ts";
 
 const Root = () => {
     const [redirectPath, setRedirectPath] = useState<string | null>(null);
@@ -11,7 +12,9 @@ const Root = () => {
 
     useEffect(() => {
         if (me.isFetched) {
-            setRedirectPath(me.isSuccess ? "/manage/events" : "/auth/login");
+            const searchParams = typeof window !== 'undefined' ? window.location.search : '';
+            const basePath = me.isSuccess ? "/manage/events" : "/auth/login";
+            setRedirectPath(basePath + searchParams);
         }
     }, [me.isFetched]);
 
@@ -87,13 +90,6 @@ export const router: RouteObject[] = [
                 },
             },
             {
-                path: "organizer/:organizerId/events?/:eventsState?",
-                async lazy() {
-                    const OrganizerDashboard = await import("./components/routes/organizer/OrganizerDashboard");
-                    return {Component: OrganizerDashboard.default};
-                }
-            },
-            {
                 path: "account",
                 async lazy() {
                     const ManageAccount = await import("./components/routes/account/ManageAccount");
@@ -126,8 +122,8 @@ export const router: RouteObject[] = [
     {
         path: "welcome",
         async lazy() {
-            const DefaultLayout = await import("./components/layouts/DefaultLayout");
-            return {Component: DefaultLayout.default};
+            const WelcomeLayout = await import("./components/layouts/WelcomeLayout");
+            return {Component: WelcomeLayout.default};
         },
         errorElement: <ErrorPage/>,
         children: [
@@ -138,6 +134,86 @@ export const router: RouteObject[] = [
                     return {Component: Welcome.default};
                 }
             },
+        ]
+    },
+    {
+        path: "admin",
+        errorElement: <ErrorPage/>,
+        async lazy() {
+            const AdminLayout = await import("./components/layouts/Admin");
+            return {Component: AdminLayout.default};
+        },
+        children: [
+            {
+                path: "",
+                async lazy() {
+                    const Dashboard = await import("./components/routes/admin/Dashboard");
+                    return {Component: Dashboard.default};
+                }
+            },
+            {
+                path: "accounts",
+                async lazy() {
+                    const Accounts = await import("./components/routes/admin/Accounts");
+                    return {Component: Accounts.default};
+                }
+            },
+            {
+                path: "accounts/:accountId",
+                async lazy() {
+                    const AccountDetail = await import("./components/routes/admin/Accounts/AccountDetail");
+                    return {Component: AccountDetail.default};
+                }
+            },
+            {
+                path: "users",
+                async lazy() {
+                    const Users = await import("./components/routes/admin/Users");
+                    return {Component: Users.default};
+                }
+            },
+            {
+                path: "events",
+                async lazy() {
+                    const Events = await import("./components/routes/admin/Events");
+                    return {Component: Events.default};
+                }
+            },
+            {
+                path: "orders",
+                async lazy() {
+                    const Orders = await import("./components/routes/admin/Orders");
+                    return {Component: Orders.default};
+                }
+            },
+            {
+                path: "attribution",
+                async lazy() {
+                    const Attribution = await import("./components/routes/admin/Attribution");
+                    return {Component: Attribution.default};
+                }
+            },
+            {
+                path: "configurations",
+                async lazy() {
+                    const Configurations = await import("./components/routes/admin/Configurations");
+                    return {Component: Configurations.default};
+                }
+            },
+            {
+                path: "failed-jobs",
+                async lazy() {
+                    const FailedJobs = await import("./components/routes/admin/FailedJobs");
+                    return {Component: FailedJobs.default};
+                }
+            },
+            {
+                path: "messages",
+                async lazy() {
+                    const Messages = await import("./components/routes/admin/Messages");
+                    return {Component: Messages.default};
+                }
+            }
         ]
     },
     {
@@ -193,6 +269,58 @@ export const router: RouteObject[] = [
                 ]
             },
         ]
+    },
+    {
+        path: "/manage/organizer/:organizerId?",
+        async lazy() {
+            const Dashboard = await import("./components/layouts/OrganizerLayout");
+            return {Component: Dashboard.default};
+        },
+        errorElement: <ErrorPage/>,
+        children: [
+            {
+                path: "dashboard?",
+                async lazy() {
+                    const OrganizerDashboard = await import("./components/routes/organizer/OrganizerDashboard");
+                    return {Component: OrganizerDashboard.default};
+                }
+            },
+            {
+                path: "events/:eventsState?",
+                async lazy() {
+                    const Events = await import("./components/routes/organizer/Events");
+                    return {Component: Events.default};
+                }
+            },
+            {
+                path: "settings",
+                async lazy() {
+                    const Settings = await import("./components/routes/organizer/Settings");
+                    return {Component: Settings.default};
+                }
+            },
+            {
+                path: "organizer-homepage-designer",
+                async lazy() {
+                    const OrganizerHomepageDesigner = await import("./components/routes/organizer/OrganizerHomepageDesigner");
+                    return {Component: OrganizerHomepageDesigner.default};
+                }
+            },
+            {
+                path: "reports",
+                async lazy() {
+                    const OrganizerReports = await import("./components/routes/organizer/Reports");
+                    return {Component: OrganizerReports.default};
+                }
+            },
+            {
+                path: "report/:reportType",
+                async lazy() {
+                    const OrganizerReportLayout = await import("./components/routes/organizer/Reports/ReportLayout");
+                    return {Component: OrganizerReportLayout.default};
+                }
+            }
+        ],
     },
     {
         path: "/manage/event/:eventId",
@@ -268,7 +396,7 @@ export const router: RouteObject[] = [
             {
                 path: "affiliates",
                 async lazy() {
-                    const Affiliates = await import("./components/routes/event/affiliates");
+                    const Affiliates = await import("./components/routes/event/Affiliates");
                     return {Component: Affiliates.default};
                 }
             },
@@ -308,6 +436,13 @@ export const router: RouteObject[] = [
                 }
             },
             {
+                path: "ticket-designer",
+                async lazy() {
+                    const TicketDesigner = await import("./components/routes/event/TicketDesigner");
+                    return {Component: TicketDesigner.default};
+                }
+            },
+            {
                 path: "getting-started",
                 async lazy() {
                     const GettingStarted = await import("./components/routes/event/GettingStarted");
@@ -331,6 +466,24 @@ export const router: RouteObject[] = [
         ]
     },
     {
+        path: "/events/:organizerId/:organizerSlug",
+        loader: publicOrganizerRouteLoader,
+        async lazy() {
+            const PublicOrganizer = await import("./components/layouts/PublicOrganizer");
+            return {Component: PublicOrganizer.default};
+        },
+        errorElement: <ErrorPage/>,
+    },
+    {
+        path: "/events/:organizerId/:organizerSlug/past-events",
+        loader: publicOrganizerRouteLoader,
+        async lazy() {
+            const PublicOrganizer = await import("./components/layouts/PublicOrganizer");
+            return {Component: PublicOrganizer.default};
+        },
+        errorElement: <ErrorPage/>,
+    },
+    {
         path: "/e/:eventId/:eventSlug",
         async lazy() {
             const EventHomepage = await import("./components/layouts/EventHomepage");
@@ -346,30 +499,16 @@ export const router: RouteObject[] = [
         },
     },
     {
-        path: "/event/:eventId/:eventSlug",
-        loader: async ({params, request}) => {
-            try {
-                const url = new URL(request.url)
-                const queryParams = new URLSearchParams(url.search);
-                const promoCode = queryParams.get("promo_code") ?? null
-                const {data: event} = await eventsClientPublic.findByID(params.eventId, promoCode);
-                let promoCodeValid: undefined | boolean = undefined;
-                if (promoCode) {
-                    promoCodeValid = (await promoCodeClientPublic.validateCode(params.eventId, promoCode)).valid;
-                }
-
-                return {event, promoCodeValid, promoCode};
-            } catch (error: any) {
-                // for 404s we want to return null so that the 404 page is shown
-                if (error?.response?.status === 404) {
-                    return {event: null, promoCodeValid: undefined, promoCode: null};
-                }
-
-                console.error(error);
-
-                throw error;
-            }
+        path: "/organizer/:organizerId/preview",
+        loader: organizerPreviewRouteLoader,
+        async lazy() {
+            const OrganizerHomepagePreview = await import("./components/layouts/OrganizerHomepagePreview");
+            return {Component: OrganizerHomepagePreview.default};
         },
+    },
+    {
+        path: "/event/:eventId/:eventSlug",
+        loader: publicEventRouteLoader,
         async lazy() {
             const PublicEvent = await import("./components/layouts/PublicEvent");
             return {Component: PublicEvent.default};
@@ -439,6 +578,14 @@ export const router: RouteObject[] = [
         errorElement: <ErrorPage/>
     },
     {
+        path: "/manage/event/:eventId/ticket-designer/print",
+        async lazy() {
+            const TicketDesignerPrint = await import("./components/routes/event/TicketDesigner/TicketDesignerPrint");
+            return {Component: TicketDesignerPrint.default};
+        },
+        errorElement: <ErrorPage/>
+    },
+    {
         path: "/product/:eventId/:attendeeShortId",
         async lazy() {
             const AttendeeProductAndInformation = await import("./components/routes/product-widget/AttendeeProductAndInformation");
@@ -451,6 +598,14 @@ export const router: RouteObject[] = [
         async lazy() {
             const CheckIn = await import("./components/layouts/CheckIn");
             return {Component: CheckIn.default};
+        },
+        errorElement: <ErrorPage/>,
+    },
+    {
+        path: "/my-tickets/:token",
+        async lazy() {
+            const MyTickets = await import("./components/routes/my-tickets");
+            return {Component: MyTickets.default};
         },
         errorElement: <ErrorPage/>,
     }

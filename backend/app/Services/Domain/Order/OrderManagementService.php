@@ -3,6 +3,7 @@
 namespace HiEvents\Services\Domain\Order;
 
 use Carbon\Carbon;
+use HiEvents\DomainObjects\AffiliateDomainObject;
 use HiEvents\DomainObjects\EventDomainObject;
 use HiEvents\DomainObjects\Generated\OrderDomainObjectAbstract;
 use HiEvents\DomainObjects\OrderDomainObject;
@@ -38,6 +39,7 @@ class OrderManagementService
         int                    $timeOutMinutes,
         string                 $locale,
         ?PromoCodeDomainObject $promoCode,
+        ?AffiliateDomainObject $affiliate = null,
         string                 $sessionId = null,
     ): OrderDomainObject
     {
@@ -53,11 +55,15 @@ class OrderManagementService
             'public_id' => IdHelper::publicId(IdHelper::ORDER_PREFIX),
             'promo_code_id' => $promoCode?->getId(),
             'promo_code' => $promoCode?->getCode(),
+            'affiliate_id' => $affiliate?->getId(),
             'locale' => $locale,
         ]);
     }
 
     /**
+     * Update order totals by summing up all order items.
+     * Platform fee and its tax are included at the item level.
+     *
      * @param OrderDomainObject $order
      * @param Collection<OrderItemDomainObject> $orderItems
      * @return OrderDomainObject
@@ -76,12 +82,14 @@ class OrderManagementService
             $totalGross += $item->getTotalGross();
         }
 
+        $rollup = $this->taxAndFeeOrderRollupService->rollup($orderItems);
+
         $this->orderRepository->updateFromArray($order->getId(), [
             'total_before_additions' => $totalBeforeAdditions,
             'total_tax' => $totalTax,
             'total_fee' => $totalFee,
             'total_gross' => $totalGross,
-            'taxes_and_fees_rollup' => $this->taxAndFeeOrderRollupService->rollup($orderItems),
+            'taxes_and_fees_rollup' => $rollup,
         ]);
 
         return $this->orderRepository

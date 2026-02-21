@@ -1,4 +1,4 @@
-import {Event} from "../types.ts";
+import {Event, Product} from "../types.ts";
 import {MantineColor} from "@mantine/core";
 import {getConfig} from "./config.ts";
 
@@ -28,7 +28,7 @@ export const getInitials = (fullName: string) => {
     }, '');
 };
 
-export const getProductsFromEvent = (event?: Event) => {
+export const getProductsFromEvent = (event?: Event): Product[] | undefined => {
     return event?.product_categories?.flatMap(category => category.products).filter(product => product !== undefined);
 }
 
@@ -102,7 +102,7 @@ export const isSsr = () => import.meta.env.SSR;
  *
  * You can find the full license text at: https://github.com/HiEventsDev/hi.events/blob/main/LICENCE
  *
- * In accordance with Section 7(b) of the AGPL, we ask that you retain the "Powered by Hi.Events" notice.
+ * In accordance with Section 7(b) of the AGPL, you must retain the "Powered by Hi.Events" notice.
  *
  * If you wish to remove this notice, a commercial license is available at: https://hi.events/licensing
  */

@@ -2,10 +2,19 @@
 
 namespace HiEvents\DomainObjects\Enums;
 
-enum Role
+enum Role: string
 {
     use BaseEnum;
 
-    case ADMIN;
-    case ORGANIZER;
+    case SUPERADMIN = 'SUPERADMIN';
+    case ADMIN = 'ADMIN';
+    case ORGANIZER = 'ORGANIZER';
+
+    public static function getAssignableRoles(): array
+    {
+        return [
+            self::ADMIN->value,
+            self::ORGANIZER->value,
+        ];
+    }
 }

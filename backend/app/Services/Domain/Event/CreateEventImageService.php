@@ -2,7 +2,7 @@
 
 namespace HiEvents\Services\Domain\Event;
 
-use HiEvents\DomainObjects\Enums\EventImageType;
+use HiEvents\DomainObjects\Enums\ImageType;
 use HiEvents\DomainObjects\EventDomainObject;
 use HiEvents\DomainObjects\ImageDomainObject;
 use HiEvents\Repository\Interfaces\ImageRepositoryInterface;
@@ -11,6 +11,9 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\UploadedFile;
 use Throwable;
 
+/**
+ * @deprecated use CreateImageAction
+ */
 class CreateEventImageService
 {
     public function __construct(
@@ -25,17 +28,18 @@ class CreateEventImageService
      * @throws Throwable
      */
     public function createImage(
-        int            $eventId,
-        UploadedFile   $image,
-        EventImageType $type,
+        int          $eventId,
+        int          $accountId,
+        UploadedFile $image,
+        ImageType    $imageType,
     ): ImageDomainObject
     {
-        return $this->databaseManager->transaction(function () use ($image, $eventId, $type) {
-            if ($type === EventImageType::EVENT_COVER) {
+        return $this->databaseManager->transaction(function () use ($accountId, $image, $eventId, $imageType) {
+            if ($imageType === ImageType::EVENT_COVER) {
                 $this->imageRepository->deleteWhere([
                     'entity_id' => $eventId,
                     'entity_type' => EventDomainObject::class,
-                    'type' => EventImageType::EVENT_COVER->name,
+                    'type' => ImageType::EVENT_COVER->name,
                 ]);
             }
 
@@ -43,7 +47,8 @@ class CreateEventImageService
                 image: $image,
                 entityId: $eventId,
                 entityType: EventDomainObject::class,
-                imageType: $type->name,
+                imageType: $imageType->name,
+                accountId: $accountId,
             );
         });
     }

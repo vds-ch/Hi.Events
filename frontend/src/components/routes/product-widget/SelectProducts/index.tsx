@@ -37,6 +37,8 @@ import {IconChevronRight, IconX} from "@tabler/icons-react"
 import {getSessionIdentifier} from "../../../../utilites/sessionIdentifier.ts";
 import {Constants} from "../../../../constants.ts";
 
+const AFFILIATE_EXPIRY_DAYS = 30;
+
 const sendHeightToIframeWidgets = () => {
     const height = document.documentElement.scrollHeight;
     const widgetHeight = document.querySelector('.hi-product-widget-container')?.getBoundingClientRect().height || 0;
@@ -72,6 +74,7 @@ interface SelectProductsProps {
     padding?: string;
     continueButtonText?: string;
     widgetMode?: 'preview' | 'normal' | 'embedded';
+    showPoweredBy?: boolean;
 }
 
 const SelectProducts = (props: SelectProductsProps) => {
@@ -85,13 +88,48 @@ const SelectProducts = (props: SelectProductsProps) => {
     const [orderInProcessOverlayVisible, setOrderInProcessOverlayVisible] = useState(false);
     const [resizeRef, resizeObserverRect] = useResizeObserver();
     const [collapsedProducts, setCollapsedProducts] = useState<{ [key: number]: boolean }>({});
+    const [affiliateCode, setAffiliateCode] = useState<string | null>(null);
 
     useEffect(() => sendHeightToIframeWidgets(), [resizeObserverRect.height]);
+
+    useEffect(() => {
+        const storageKey = 'affiliate_code_' + eventId;
+
+        const now = Date.now();
+        const affiliateCodeFromUrl = new URLSearchParams(window.location.search).get('aff');
+
+        if (affiliateCodeFromUrl) {
+            const data = {code: affiliateCodeFromUrl, timestamp: now};
+            localStorage.setItem(storageKey, JSON.stringify(data));
+            setAffiliateCode(affiliateCodeFromUrl);
+            return;
+        }
+
+        const storedData = localStorage.getItem(storageKey);
+        if (storedData) {
+            try {
+                const parsed = JSON.parse(storedData);
+                const ageInDays = (now - parsed.timestamp) / (1000 * 60 * 60 * 24);
+                if (ageInDays <= AFFILIATE_EXPIRY_DAYS) {
+                    setAffiliateCode(parsed.code);
+                } else {
+                    localStorage.removeItem(storageKey);
+                }
+            } catch {
+                localStorage.removeItem(storageKey);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        form.setFieldValue('affiliate_code', affiliateCode || null);
+    }, [affiliateCode]);
 
     const form = useForm<ProductFormPayload>({
         initialValues: {
             products: undefined,
             promo_code: props.promoCodeValid ? props.promoCode || null : null,
+            affiliate_code: affiliateCode || null,
             session_identifier: undefined,
         },
     });
@@ -103,7 +141,10 @@ const SelectProducts = (props: SelectProductsProps) => {
             .then(() => {
                 const url = '/checkout/' + eventId + '/' + data.data.short_id + '/details';
                 if (props.widgetMode === 'embedded') {
-                    window.open(url, '_blank');
+                    window.open(
+                        url + '?session_identifier=' + data.data.session_identifier + '&utm_source=embedded_widget',
+                        '_blank'
+                    );
                     setOrderInProcessOverlayVisible(true);
                     return;
                 }
@@ -271,27 +312,85 @@ const SelectProducts = (props: SelectProductsProps) => {
                 </div>
             )}
             {orderInProcessOverlayVisible && (
-                <Modal withCloseButton={false} opened={true} onClose={() => setOrderInProcessOverlayVisible(false)}>
-                    <div style={{textAlign: 'center', padding: '20px'}}>
-                        <img style={{width: '110px'}} src={'/stopwatch-product-icon.svg'} alt={''}/>
-                        <div>
-                            <h4 style={{margin: '0'}}>
+                <Modal
+                    withCloseButton={false}
+                    opened={true}
+                    onClose={() => setOrderInProcessOverlayVisible(false)}
+                    styles={{
+                        body: {
+                            padding: '30px 24px'
+                        },
+                        content: {
+                            borderRadius: '8px',
+                            backgroundColor: props.colors?.background || 'white'
+                        }
+                    }}
+                >
+                    <div style={{
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '16px',
+                        color: props.colors?.primaryText || 'inherit'
+                    }}>
+                        <div style={{width: '100%'}}>
+                            <h3 style={{
+                                margin: '0 0 12px 0',
+                                fontSize: '20px',
+                                fontWeight: '600',
+                                color: props.colors?.primaryText || 'inherit'
+                            }}>
                                 {t`Please continue in the new tab`}
-                            </h4>
-                            <Trans>
-                                If a new tab did not open, please {' '}
-                                <a href={'/checkout/' + eventId + '/' + productMutation.data?.data.short_id + '/details'}
-                                   target={'_blank'} rel={'noopener noreferrer'}>
-                                    <b>{t`click here`}</b>.
-                                </a>
-                            </Trans>
+                            </h3>
+
+                            <p style={{
+                                margin: '0 0 20px 0',
+                                fontSize: '15px',
+                                lineHeight: '1.5',
+                                color: props.colors?.primaryText || 'inherit'
+                            }}>
+                                {t`If a new tab did not open automatically, please click the button below to continue to checkout.`}
+                            </p>
+
                             <Button
-                                style={{marginTop: '20px'}}
-                                onClick={() => setOrderInProcessOverlayVisible(false)}
-                                variant={'transparent'}
-                                size={'xs'}
+                                component="a"
+                                href={'/checkout/' + eventId + '/' + productMutation.data?.data.short_id + '/details' + '?session_identifier=' + productMutation.data?.data.session_identifier}
+                                target={'_blank'}
+                                rel={'noopener noreferrer'}
+                                fullWidth
+                                size="md"
+                                styles={{
+                                    root: {
+                                        backgroundColor: props.colors?.secondary || 'var(--primary-color, #228be6)',
+                                        color: props.colors?.secondaryText || 'var(--accent-contrast, white)',
+                                        fontWeight: 600,
+                                        marginBottom: '12px',
+                                        '&:hover': {
+                                            backgroundColor: props.colors?.secondary || 'var(--primary-color, #1c7ed6)',
+                                            filter: 'brightness(0.95)',
+                                        }
+                                    }
+                                }}
                             >
-                                {t`Dismiss`}
+                                {t`Continue to Checkout`}
+                            </Button>
+
+                            <Button
+                                onClick={() => setOrderInProcessOverlayVisible(false)}
+                                variant={'subtle'}
+                                size={'sm'}
+                                styles={{
+                                    root: {
+                                        color: props.colors?.primaryText || 'var(--primary-color, #228be6)',
+                                        '&:hover': {
+                                            backgroundColor: 'transparent',
+                                            textDecoration: 'underline'
+                                        }
+                                    }
+                                }}
+                            >
+                                {t`Dismiss this message`}
                             </Button>
                         </div>
                     </div>
@@ -300,15 +399,24 @@ const SelectProducts = (props: SelectProductsProps) => {
             {(event && productAreAvailable) && (
                 <form target={'__blank'} onSubmit={form.onSubmit(handleProductSelection as any)}>
                     <Input type={'hidden'} {...form.getInputProps('promo_code')} />
+                    <Input type={'hidden'} {...form.getInputProps('affiliate_code')} />
                     <div className={'hi-product-category-rows'}>
                         {productCategories && productCategories.map((category) => {
                             return (
                                 <div className={'hi-product-category-row'} key={category.id}>
-                                    <h2 className={'hi-product-category-title'}>
+                                    <h2 className={'hi-product-category-title'} style={category.description ? {
+                                        marginBottom: '0px'
+                                    } : {}}>
                                         {category.name}
                                     </h2>
+                                    {category.description && (
+                                        <div className={'hi-product-category-description'}>
+                                            <Spoiler maxHeight={500} showLabel={t`Show more`} hideLabel={t`Hide`}>
+                                                <div dangerouslySetInnerHTML={{__html: category.description}}/>
+                                            </Spoiler>
+                                        </div>
+                                    )}
                                     <div className={'hi-product-rows'}>
-
                                         {category.products?.length === 0 && (
                                             <div className={'hi-no-products'}>
                                                 <p className={'hi-no-products-message'}>
@@ -318,6 +426,7 @@ const SelectProducts = (props: SelectProductsProps) => {
                                         )}
 
                                         {(category.products) && category.products.map((product) => {
+                                            const currentProductIndex = productIndex;
                                             const quantityRange = range(product.min_per_order || 1, product.max_per_order || 25)
                                                 .map((n) => n.toString());
                                             quantityRange.unshift("0");
@@ -331,7 +440,12 @@ const SelectProducts = (props: SelectProductsProps) => {
                                             };
 
                                             return (
-                                                <div key={product.id} className={'hi-product-row'}>
+                                                <div key={product.id} className={`hi-product-row ${product.is_highlighted ? 'hi-product-highlighted' : ''}`}>
+                                                    {product.is_highlighted && product.highlight_message && (
+                                                        <div className={'hi-product-highlight-message'}>
+                                                            {product.highlight_message}
+                                                        </div>
+                                                    )}
                                                     <div className={'hi-title-row'}>
                                                         <UnstyledButton variant={'transparent'}
                                                                         className={'hi-product-title'}
@@ -369,7 +483,7 @@ const SelectProducts = (props: SelectProductsProps) => {
                                                         </UnstyledButton>
                                                     </div>
                                                     <Collapse transitionDuration={100} in={!isProductCollapsed}
-                                                              className={'hi-product-content'}>
+                                                              className={'hi-product-content'} hidden={isProductCollapsed}>
                                                         <div className={'hi-price-tiers-rows'}>
                                                             <TieredPricing
                                                                 productIndex={productIndex++}
@@ -379,7 +493,7 @@ const SelectProducts = (props: SelectProductsProps) => {
                                                             />
                                                         </div>
 
-                                                        {product.max_per_order && form.values.products && isObjectEmpty(form.errors) && (form.values.products[productIndex]?.quantities.reduce((acc, {quantity}) => acc + Number(quantity), 0) > product.max_per_order) && (
+                                                        {product.max_per_order && form.values.products && isObjectEmpty(form.errors) && (form.values.products[currentProductIndex]?.quantities.reduce((acc, {quantity}) => acc + Number(quantity), 0) > product.max_per_order) && (
                                                             <div className={'hi-product-quantity-error'}>
                                                                 <Trans>The maximum number of products
                                                                     for {product.title}
@@ -387,9 +501,9 @@ const SelectProducts = (props: SelectProductsProps) => {
                                                             </div>
                                                         )}
 
-                                                        {form.errors[`products.${productIndex}`] && (
+                                                        {form.errors[`products.${currentProductIndex}`] && (
                                                             <div className={'hi-product-quantity-error'}>
-                                                                {form.errors[`products.${productIndex}`]}
+                                                                {form.errors[`products.${currentProductIndex}`]}
                                                             </div>
                                                         )}
 
@@ -430,7 +544,7 @@ const SelectProducts = (props: SelectProductsProps) => {
             )}
             <div className={'hi-promo-code-row'}>
                 {(!showPromoCodeInput && !form.values.promo_code) && (
-                    <Anchor className={'hi-have-a-promo-code-link'}
+                    <Anchor className={'hi-have-a-promo-code-link'} underline={'always'}
                             onClick={() => setShowPromoCodeInput(true)}>
                         {t`Have a promo code?`}
                     </Anchor>
@@ -479,6 +593,7 @@ const SelectProducts = (props: SelectProductsProps) => {
                     </Group>
                 )}
             </div>
+
             {
                 /**
                  * (c) Hi.Events Ltd 2025
@@ -494,9 +609,11 @@ const SelectProducts = (props: SelectProductsProps) => {
                  * If you wish to remove this notice, a commercial license is available at: https://hi.events/licensing
                  */
             }
-            <PoweredByFooter style={{
-                'color': props.colors?.primaryText || '#000',
-            }}/>
+            {(props.showPoweredBy ?? true) && (
+                <PoweredByFooter style={{
+                    'color': props.colors?.primaryText || '#000',
+                }}/>
+            )}
         </div>
     );
 }

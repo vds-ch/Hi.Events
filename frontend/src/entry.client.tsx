@@ -1,11 +1,10 @@
-import ReactDOM from "react-dom/client";
-import {createBrowserRouter, matchRoutes, RouterProvider} from "react-router";
-import {hydrate} from "@tanstack/react-query";
+import {hydrateRoot} from "react-dom/client";
+import {createBrowserRouter, matchRoutes, RouterProvider} from "react-router-dom";
 
 import {router} from "./router";
 import {App} from "./App";
 import {queryClient} from "./utilites/queryClient";
-import {getClientLocale} from "./locales.ts";
+import {dynamicActivateLocale, getClientLocale, getSupportedLocale,} from "./locales.ts";
 
 declare global {
     interface Window {
@@ -13,36 +12,30 @@ declare global {
     }
 }
 
-if (window.__REHYDRATED_STATE__) {
-    hydrate(queryClient, window.__REHYDRATED_STATE__);
-}
+const dehydratedState = window.__REHYDRATED_STATE__;
 
 async function initClientApp() {
-    // Determine if any of the initial routes are lazy
-    const lazyMatches = matchRoutes(router, window.location)?.filter(
-        (m) => m.route.lazy
-    );
+    const rawLocale = getClientLocale();
+    const locale = getSupportedLocale(rawLocale);
+    await dynamicActivateLocale(locale);
 
-    // Load the lazy matches and update the routes before creating your router
-    // so we can hydrate the SSR-rendered content synchronously
-    if (lazyMatches && lazyMatches?.length > 0) {
+    // Resolve lazy-loaded routes before hydration
+    const matches = matchRoutes(router, window.location)?.filter((m) => m.route.lazy);
+    if (matches && matches.length > 0) {
         await Promise.all(
-            lazyMatches.map(async (m) => {
+            matches.map(async (m) => {
                 const routeModule = await m.route.lazy?.();
                 Object.assign(m.route, {...routeModule, lazy: undefined});
             })
         );
     }
 
-    // todo - Investigate using hydrateRoot instead of createRoot
-    ReactDOM.createRoot(document.getElementById("app") as HTMLElement).render(
-        <App
-            queryClient={queryClient}
-            locale={getClientLocale()}
-        >
-            <RouterProvider
-                router={createBrowserRouter(router)}
-            />
+    const browserRouter = createBrowserRouter(router);
+
+    hydrateRoot(
+        document.getElementById("app") as HTMLElement,
+        <App queryClient={queryClient} locale={rawLocale} dehydratedState={dehydratedState}>
+            <RouterProvider router={browserRouter}/>
         </App>
     );
 }

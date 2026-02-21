@@ -42,16 +42,19 @@ class CreateOrderActionPublic extends BaseAction
             createOrderPublicDTO: CreateOrderPublicDTO::fromArray([
                 'is_user_authenticated' => $this->isUserAuthenticated(),
                 'promo_code' => $request->input('promo_code'),
+                'affiliate_code' => $request->input('affiliate_code'),
                 'products' => ProductOrderDetailsDTO::collectionFromArray($request->input('products')),
                 'session_identifier' => $sessionId,
                 'order_locale' => $this->localeService->getLocaleOrDefault($request->getPreferredLanguage()),
             ])
         );
 
+        $order->setSessionIdentifier($sessionId);
+
         $response =  $this->resourceResponse(
             resource: OrderResourcePublic::class,
             data: $order,
-            statusCode: ResponseCodes::HTTP_CREATED
+            statusCode: ResponseCodes::HTTP_CREATED,
         );
 
         return $response->withCookie(

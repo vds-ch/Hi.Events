@@ -114,7 +114,7 @@ export const LocationSettings = () => {
                             <TextInput
                                 {...form.getInputProps('location_details.venue_name')}
                                 label={t`Venue Name`}
-                                placeholder={t`Hi.Events Conference Center`}
+                                placeholder={t`Conference Center`}
                             />
                             <InputGroup>
                                 <TextInput
@@ -155,7 +155,7 @@ export const LocationSettings = () => {
                             </InputGroup>
                             <TextInput
                                 {...form.getInputProps('maps_url')}
-                                description={t`If blank, the address will be used to generate a Google Mapa link`}
+                                description={t`If blank, the address will be used to generate a Google Maps link`}
                                 label={t`Custom Maps URL`}
                                 placeholder={t`https://example-maps-service.com/...`}
                             />

@@ -1,127 +1,205 @@
-<p align="center">
-  <img src="https://hievents-public.s3.us-west-1.amazonaws.com/website/hi-events-rainbow.png?v=1" alt="Hi.Events 标志" width="200px">
-</p>
-<h3 align="center">Hi.Events</h3>
-<p align="center">
-<a href="https://demo.hi.events/event/1/dog-conf-2030">演示活动 🌟</a> <a href="https://hi.events?utm_source=gh-readme">网站 🌎</a>  <a href="https://hi.events/docs">文档 📄</a>  <a href="https://hi.events/docs/getting-started?utm_source=gh-readme">安装 ⚙️</a>
-</p>
-
-<h3 align="center">
- 轻松管理活动并在线售票。
-</h3>
-
 <div align="center">
 
-[![Hi.Events 文档](https://img.shields.io/badge/docs-hi.events-blue)](https://hi.events/docs)
-[![许可证: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://github.com/HiEventsDev/hi.events/LICENCE)
-[![GitHub 发布](https://img.shields.io/github/v/release/HiEventsDev/hi.events?include_prereleases)](https://github.com/HiEventsDev/hi.events/releases)
+<img src="https://hievents-public.s3.us-west-1.amazonaws.com/website/github-banner.png?v=1" alt="Hi.Events - 开源活动售票平台" width="100%">
+
+# Hi.Events
+
+### 开源活动售票与管理平台
+
+在线销售会议、夜生活活动、音乐会、俱乐部之夜、工作坊和音乐节的门票。
+自托管或云端。您的活动，您的品牌，您的数据。
+
+[试用云端版 →](https://app.hi.events/auth/register?utm_source=gh-readme) · [在线演示](https://app.hi.events/event/2/hievents-conference-2030?utm_source=gh-readme) · [开发文档](https://hi.events/docs?utm_source=gh-readme) · [官方网站](https://hi.events?utm_source=gh-readme)
+
+[![许可证: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://github.com/HiEventsDev/Hi.Events/blob/develop/LICENCE)
+[![GitHub 版本](https://img.shields.io/github/v/release/HiEventsDev/hi.events?include_prereleases)](https://github.com/HiEventsDev/hi.events/releases)
 [![运行单元测试](https://github.com/HiEventsDev/hi.events/actions/workflows/unit-tests.yml/badge.svg?event=push)](https://github.com/HiEventsDev/hi.events/actions/workflows/unit-tests.yml)
-[![Docker 下载](https://img.shields.io/docker/pulls/daveearley/hi.events-all-in-one)](https://hub.docker.com/r/daveearley/hi.events-all-in-one)
+[![Docker 拉取量](https://img.shields.io/docker/pulls/daveearley/hi.events-all-in-one)](https://hub.docker.com/r/daveearley/hi.events-all-in-one)
+
+<a href="https://trendshift.io/repositories/10563" target="_blank">
+  <img src="https://trendshift.io/api/badge/repositories/10563" alt="HiEventsDev%2Fhi.events | Trendshift" width="250" height="55"/>
+</a>
+
+<p>
+<a href="README.de.md">Deutsch</a> · <a href="README.pt.md">Português</a> · <a href="README.pt-br.md">Português do Brasil</a> · <a href="README.fr.md">Français</a> · <a href="README.it.md">Italian</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.es.md">Español</a> · <a href="README.zh-cn.md">中文</a> · <a href="README.zh-hk.md">繁體中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.hu.md">Magyar</a> · <a href="README.pl.md">Polski</a>
+</p>
 
 </div>
 
-<div align="center">
- 🌟 期待您的星标支持！ 🌟
-</div>
+<br>
 
-<hr/>
+## 为什么选择 Hi.Events？
 
-## 目录
+大多数售票平台会收取每张票的手续费，并将您的数据锁定在他们的生态系统中。**Hi.Events 是 Eventbrite、Tickettailor、Dice.fm 和其他售票平台的现代化开源替代方案**，专为希望完全控制品牌、结账流程、数据和基础设施的主办方打造。
 
-- [介绍](#-介绍)
-- [功能](#-功能)
-- [快速开始](#-快速开始)
-- [更新日志](#-更新日志)
-- [贡献](#-贡献)
-- [常见问题](#-常见问题)
+专为夜生活推广方、音乐节主办方、场馆、社区团体和会议主办方设计。
 
-## 📚 介绍
+<br>
 
-<a href="https://hi.events">Hi.Events</a> 是一个功能丰富的自托管活动管理和售票平台。从会议到俱乐部夜场，
-Hi.Events 旨在帮助您创建、管理和销售各种规模的活动门票。
+<img alt="Hi.Events 仪表盘" src="https://hievents-public.s3.us-west-1.amazonaws.com/website/github-screenshot.png"/>
 
-<img alt="Hi.Events 自托管售票仪表盘" src="https://hievents-public.s3.us-west-1.amazonaws.com/website/dashboard-screenshot.png"/>
+<br>
 
-## 🌟 功能
+## 功能特性
 
-<a href="https://hi.events">Hi.Events</a> 拥有众多功能，简化您的活动管理和售票流程：
+<table>
+<tr>
+<td width="50%" valign="top">
 
-- 📊 **活动分析:** 深入了解活动表现和门票销售情况。
-- 🎟 **可嵌入的售票小部件:** 轻松将售票集成到任何网站。
-- 🖥 **可定制的活动主页:** 通过灵活的设计选项创建引人注目的活动页面。
-- 🔑 **直观的签到工具:** 使用 Hi.Events 的二维码签到工具轻松签到与会者。
-- 💬 **活动消息工具:** 向与会者发送重要更新和提醒。
-- 📝 **自定义订单表单:** 在结账时通过定制问题收集与会者信息。
-- 🎫 **多种票种:** 免费、付费、捐赠或分级票种。
-- 💸 **多功能促销代码:** 高度多功能的折扣代码。预售访问，多种折扣选项。
-- 💰 **即时支付:** 通过无缝的 Stripe 集成享受即时支付。
-- 🧾 **税费配置:** 按票种添加税费。
-- 📦 **数据导出:** 将与会者和订单数据导出为 XLSX 或 CSV。
-- 💻 **REST API:** 功能齐全的 REST API 用于自定义集成。
-- 🔍 **SEO 工具:** 为每个活动自定义 SEO 设置。
-- 🛒 **美观的结账流程:** 确保流畅、美观的结账体验。
-- 🔐 **基于角色的访问:** 支持多用户角色。
-- 💻 **在线活动支持:** 提供在线活动说明和链接。
-- ⏪ **全额和部分退款支持:** 轻松管理全额和部分退款。
-- 📧 **邮件通知:** 使用自动邮件通知让与会者知情。
-- 📱 **移动响应:** 在任何设备上享受无缝体验。
-- 🌐 **多语言支持:** 支持多种语言.
-- 🎉 **以及更多！**
+### 🎟️ 售票与销售
 
-## 🚀 快速开始
+- 灵活的票种类型（免费、付费、捐赠、阶梯票）
+- 通过优惠码隐藏和锁定门票
+- 优惠码和预售权限
+- 产品附加项（周边、升级、额外项）
+- 产品分类管理
+- 完整的税费支持（增值税、服务费）
+- 容量管理和共享限制
 
-有关详细的安装说明，请参阅我们的 [文档](https://hi.events/docs/getting-started)。如需快速开始，请按照以下步骤操作：
+</td>
+<td width="50%" valign="top">
+
+### 🎨 品牌与定制
+
+- 精美的转化优化结账页面
+- 可自定义的 PDF 门票设计
+- 品牌主办方主页
+- 拖放式活动页面构建器
+- 可嵌入的票务小组件
+- SEO 工具（元标签、Open Graph）
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 👥 参会者管理
+
+- 自定义结账问题
+- 高级搜索、筛选和导出（CSV/XLSX）
+- 全额和部分退款
+- 按票种批量消息发送
+- 二维码签到与扫描记录
+- 访问控制签到列表
+
+</td>
+<td width="50%" valign="top">
+
+### 📊 分析与增长
+
+- 实时销售仪表盘
+- 联盟和推荐跟踪
+- 高级报表（销售、税务、优惠码）
+- Webhooks（Zapier、Make、CRM）
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+### ⚙️ 运营
+
+多用户角色和权限 · Stripe Connect 即时支付 · 线下支付方式 · 线下活动支持 · 自动开具发票 · 活动归档 · 多语言支持 · 完整的 REST API
+
+</td>
+</tr>
+</table>
+
+<br>
+
+## 功能对比
+
+| 功能特性                | Hi.Events | Eventbrite | Tickettailor | Dice    |
+|:-----------------------|:----------|:-----------|:-------------|:--------|
+| 自托管选项              | ✅         | ❌          | ❌            | ❌       |
+| 开源                   | ✅         | ❌          | ❌            | ❌       |
+| 无单票手续费（自托管）   | ✅         | ❌          | ❌            | ❌       |
+| 完全自定义品牌          | ✅         | 有限制      | ✅            | 有限制   |
+| 联盟跟踪               | ✅         | ✅          | ❌            | ❌       |
+| API 访问               | ✅         | ✅          | ✅            | 有限制   |
+| 拥有您的数据            | ✅         | ❌          | ❌            | ❌       |
+
+<br>
+
+## 快速开始
 
 ### 一键部署
 
-[![在 DigitalOcean 上部署](https://www.deploytodo.com/do-btn-blue.svg)](https://github.com/HiEventsDev/hi.events-digitalocean)
+[![部署到 DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://github.com/HiEventsDev/hi.events-digitalocean)
+[![部署到 Render](https://render.com/images/deploy-to-render-button.svg)](https://github.com/HiEventsDev/hi.events-render.com)
+[![部署到 Railway](https://railway.app/button.svg)](https://railway.app/template/8CGKmu?referralCode=KvSr11)
+[![部署到 Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/8DIRY6)
 
-[![在 Render 上部署](https://render.com/images/deploy-to-render-button.svg)](https://github.com/HiEventsDev/hi.events-render.com)
+### Docker
 
-[![在 Railway 上部署](https://railway.app/button.svg)](https://railway.app/template/8CGKmu?referralCode=KvSr11)
+```bash
+git clone git@github.com:HiEventsDev/hi.events.git
+cd hi.events/docker/all-in-one
 
-[![在 Zeabur 上部署](https://zeabur.com/button.svg)](https://zeabur.com/templates/8DIRY6)
+# 生成密钥（Linux/macOS）
+echo "APP_KEY=base64:$(openssl rand -base64 32)" >> .env
+echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 
-### 🐳 使用 Docker 快速开始
+docker compose up -d
+```
 
-> [!重要]  
-> 请确保您的系统上已安装 Docker 和 Docker Compose。如果没有，您可以从 Docker 官方网站下载：[Docker](https://www.docker.com/get-started)。
+> [!TIP]
+> **Windows 用户：** 请查看 `./docker/all-in-one/README.md` 了解密钥生成说明。
 
-1. **克隆仓库：**
-   ```bash
-   git clone git@github.com:HiEventsDev/hi.events.git
-   ```
+打开 `http://localhost:8123` 并创建您的账户。
 
-2. **导航到 Docker 目录：**
-   ```bash
-   cd hi.events/docker/all-in-one
-   ```
+📖 [完整安装指南](https://hi.events/docs/getting-started?utm_source=gh-readme)
 
-3. **启动 Docker 容器：**
-   ```bash
-   docker compose up -d
-   ```
-4. **创建一个账户：**
-   ```bash
-   打开浏览器并导航到 http://localhost:8123/auth/register。
-   ```
+<br>
 
-ℹ️ 请参阅 [快速开始指南](https://hi.events/docs/getting-started) 了解其他安装方法，以及设置生产或本地开发环境的详细步骤。
+## Hi.Events 云端版
 
-## 📝 更新日志
+不想自托管？**[Hi.Events 云端版](https://app.hi.events/auth/register?utm_source=gh-readme)** 是完全托管的选项，无需设置，自动更新，基础设施由我们管理。
 
-请访问我们的 [GitHub 发布页面](https://github.com/HiEventsDev/hi.events/releases) 了解最新的改进和功能添加。
+[立即开始 →](https://app.hi.events/auth/register?utm_source=gh-readme)
 
-## 🤝 贡献
+<br>
 
-我们欢迎贡献、建议和错误报告！在提出新功能或扩展之前，请先打开一个问题进行讨论。
+## 开发文档
 
-## ❓ 常见问题
+| 资源               | 链接                                                                                          |
+|:------------------|:----------------------------------------------------------------------------------------------|
+| 快速入门           | [hi.events/docs/getting-started](https://hi.events/docs/getting-started?utm_source=gh-readme) |
+| 配置说明           | [hi.events/docs/configuration](https://hi.events/docs/configuration?utm_source=gh-readme)     |
+| API 参考文档       | [hi.events/docs/api](https://hi.events/docs/api?utm_source=gh-readme)                         |
+| Webhooks          | [hi.events/docs/webhooks](https://hi.events/docs/webhooks?utm_source=gh-readme)               |
 
-有问题吗？我们的 [文档](https://hi.events/docs) 有答案。如果您找不到所需的信息，请随时通过 [hello@hi.events](mailto:hello@hi.events) 联系我们。
+<br>
 
-## 📜 许可证
+## 参与贡献
 
-Hi.Events 根据 [AGPL-3.0](https://github.com/HiEventsDev/hi.events/blob/main/LICENCE) 许可证条款进行许可。
+我们欢迎贡献。详细信息请参阅[贡献指南](CONTRIBUTING.md)。
 
-有关更多许可信息，包括商业许可选项，请访问我们的许可页面 [此处](https://hi.events/licensing)。
+<br>
+
+## 支持
+
+📖 [开发文档](https://hi.events/docs?utm_source=gh-readme) · 📧 [hello@hi.events](mailto:hello@hi.events) ·
+🐛 [GitHub Issues](https://github.com/HiEventsDev/hi.events/issues)
+
+<br>
+
+## 更新日志
+
+在[发布页面](https://github.com/HiEventsDev/hi.events/releases)了解新功能和改进。
+
+<br>
+
+## 许可证
+
+Hi.Events 采用 **AGPL-3.0 附加条款**许可。商业许可可用。[了解更多](https://hi.events/licensing)。
+
+<br>
+
+<div align="center">
+
+**[官方网站](https://hi.events)** · **[开发文档](https://hi.events/docs)** · **[Twitter/X](https://x.com/HiEventsTickets)**
+
+用 ☘️ 在爱尔兰制作
+
+</div>

@@ -11,6 +11,7 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
     final public const SINGULAR_NAME = 'image';
     final public const PLURAL_NAME = 'images';
     final public const ID = 'id';
+    final public const ACCOUNT_ID = 'account_id';
     final public const ENTITY_ID = 'entity_id';
     final public const ENTITY_TYPE = 'entity_type';
     final public const TYPE = 'type';
@@ -22,8 +23,13 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
     final public const CREATED_AT = 'created_at';
     final public const UPDATED_AT = 'updated_at';
     final public const DELETED_AT = 'deleted_at';
+    final public const WIDTH = 'width';
+    final public const HEIGHT = 'height';
+    final public const AVG_COLOUR = 'avg_colour';
+    final public const LQIP_BASE64 = 'lqip_base64';
 
     protected int $id;
+    protected ?int $account_id = null;
     protected ?int $entity_id = null;
     protected ?string $entity_type = null;
     protected ?string $type = null;
@@ -35,11 +41,16 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
     protected ?string $created_at = 'CURRENT_TIMESTAMP';
     protected ?string $updated_at = 'CURRENT_TIMESTAMP';
     protected ?string $deleted_at = null;
+    protected ?int $width = null;
+    protected ?int $height = null;
+    protected ?string $avg_colour = null;
+    protected ?string $lqip_base64 = null;
 
     public function toArray(): array
     {
         return [
                     'id' => $this->id ?? null,
+                    'account_id' => $this->account_id ?? null,
                     'entity_id' => $this->entity_id ?? null,
                     'entity_type' => $this->entity_type ?? null,
                     'type' => $this->type ?? null,
@@ -51,6 +62,10 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
                     'created_at' => $this->created_at ?? null,
                     'updated_at' => $this->updated_at ?? null,
                     'deleted_at' => $this->deleted_at ?? null,
+                    'width' => $this->width ?? null,
+                    'height' => $this->height ?? null,
+                    'avg_colour' => $this->avg_colour ?? null,
+                    'lqip_base64' => $this->lqip_base64 ?? null,
                 ];
     }
 
@@ -63,6 +78,17 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function setAccountId(?int $account_id): self
+    {
+        $this->account_id = $account_id;
+        return $this;
+    }
+
+    public function getAccountId(): ?int
+    {
+        return $this->account_id;
     }
 
     public function setEntityId(?int $entity_id): self
@@ -184,5 +210,49 @@ abstract class ImageDomainObjectAbstract extends \HiEvents\DomainObjects\Abstrac
     public function getDeletedAt(): ?string
     {
         return $this->deleted_at;
+    }
+
+    public function setWidth(?int $width): self
+    {
+        $this->width = $width;
+        return $this;
+    }
+
+    public function getWidth(): ?int
+    {
+        return $this->width;
+    }
+
+    public function setHeight(?int $height): self
+    {
+        $this->height = $height;
+        return $this;
+    }
+
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+
+    public function setAvgColour(?string $avg_colour): self
+    {
+        $this->avg_colour = $avg_colour;
+        return $this;
+    }
+
+    public function getAvgColour(): ?string
+    {
+        return $this->avg_colour;
+    }
+
+    public function setLqipBase64(?string $lqip_base64): self
+    {
+        $this->lqip_base64 = $lqip_base64;
+        return $this;
+    }
+
+    public function getLqipBase64(): ?string
+    {
+        return $this->lqip_base64;
     }
 }
