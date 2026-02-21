@@ -386,7 +386,6 @@ const EventHomepage = ({...loaderData}: EventHomepageProps) => {
                             {event?.description && (
                                 <div className={classes.section}>
                                     <div className={classes.sectionHeader}>
-                                        <!--<h2 className={classes.sectionTitle}>{t`About`}</h2>-->
                                     </div>
                                     <div
                                         className={classes.description}
