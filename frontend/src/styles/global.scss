@@ -1,10 +1,10 @@
 @import "mixins";
 
 :root {
-  --tk-text: #4b3b5d;
-  --tk-primary: #472e78;
-  --tk-secondary: #efebf7;
-  --tk-secondary-text: #7c7091;
+  --tk-text: #97c010;
+  --tk-primary: #97c010;
+  --tk-secondary: #E3E3CA;
+  --tk-secondary-text: #888878;
   --tk-color-gray: #f7f6f8;
   --tk-color-gray-2: #e2e2e2;
   --tk-color-gray-dark: #838383;
@@ -38,7 +38,7 @@ html {
 }
 
 body {
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Acumin', 'Varela Round', sans-serif;
   color: var(--tk-text);
   background-color: var(--tk-color-gray) !important;
   height: auto;
@@ -72,3 +72,4 @@ a {
     //margin-bottom: 0;
   }
 }
+

@@ -2577,7 +2577,7 @@ msgstr "Se uma nova guia não for aberta, <0><1>{0}</1>.</0>"
 
 #: src/components/routes/event/Settings/Sections/LocationSettings/index.tsx:158
 msgid "If blank, the address will be used to generate a Google Mapa link"
-msgstr "Se estiver em branco, o endereço será usado para gerar um link do Google Maps"
+msgstr "Se estiver em branco, o endereço será usado para gerar um link do Maps"
 
 #: src/components/routes/event/Settings/Sections/PaymentSettings/index.tsx:158
 msgid "If enabled, check-in staff can either mark attendees as checked in or mark the order as paid and check in the attendees. If disabled, attendees associated with unpaid orders cannot be checked in."
@@ -5556,8 +5556,8 @@ msgid "View map"
 msgstr "Ver mapa"
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:65
-msgid "View on Google Maps"
-msgstr "Ver no Google Maps"
+msgid "View on Maps"
+msgstr "Ver no Maps"
 
 #: src/components/common/OrdersTable/index.tsx:111
 #~ msgid "View order"
@@ -6120,3 +6120,4 @@ msgstr "CEP ou Código postal"
 #: src/components/routes/product-widget/CollectInformation/index.tsx:349
 msgid "ZIP or Postal Code"
 msgstr "CEP ou Código Postal"
+

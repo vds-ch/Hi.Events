@@ -5556,7 +5556,7 @@ msgid "View map"
 msgstr "查看地图"
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:65
-msgid "View on Google Maps"
+msgid "View on Maps"
 msgstr "在谷歌地图上查看"
 
 #: src/components/common/OrdersTable/index.tsx:111
@@ -6120,3 +6120,4 @@ msgstr "邮政编码"
 #: src/components/routes/product-widget/CollectInformation/index.tsx:349
 msgid "ZIP or Postal Code"
 msgstr "邮政编码"
+

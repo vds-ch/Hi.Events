@@ -6160,8 +6160,8 @@ msgid "View map"
 msgstr "View map"
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:65
-msgid "View on Google Maps"
-msgstr "View on Google Maps"
+msgid "View on Maps"
+msgstr "View on Maps"
 
 #: src/components/common/OrdersTable/index.tsx:111
 #~ msgid "View order"
@@ -6784,3 +6784,4 @@ msgstr "ZIP or Postal Code"
 #: src/components/routes/event/Settings/Sections/LocationSettings/index.tsx:92
 #~ msgid "Zoom link, Google Meet link, etc."
 #~ msgstr "Zoom link, Google Meet link, etc."
+

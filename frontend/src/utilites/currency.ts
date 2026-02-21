@@ -271,7 +271,7 @@ const euroZoneCountries = [
 ] as const;
 
 export const getUserCurrency = (): CurrencyCode => {
-    if (typeof window === 'undefined') return 'USD';
+    if (typeof window === 'undefined') return 'CHF';
 
     try {
         const userLocales = [
@@ -304,10 +304,11 @@ export const getUserCurrency = (): CurrencyCode => {
             return 'EUR';
         }
 
-        // Default to USD if no match found
-        return 'USD';
+        // Default to CHF if no match found
+        return 'CHF';
     } catch (error) {
-        // Fallback to USD if anything goes wrong
-        return 'USD';
+        // Fallback to CHF if anything goes wrong
+        return 'CHF';
     }
 };
+

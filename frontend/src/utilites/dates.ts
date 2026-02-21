@@ -9,11 +9,14 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advanced from 'dayjs/plugin/advancedFormat';
 import {isSsr} from "./helpers.ts";
+import 'dayjs/locale/de'; // <-- Import the German locale
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
 dayjs.extend(timezone);
 dayjs.extend(advanced)
+
+dayjs.locale('de') // <-- Dirty hack: set everything in German
 
 export const prettyDate = (date: string, tz: string): string => {
     // eslint-disable-next-line lingui/no-unlocalized-strings
@@ -57,3 +60,4 @@ export const dateToBrowserTz = (date: string, fallbackTz: string): string => {
 
     return dayjs.utc(date).tz(userTimezone).format('MMM D, YYYY h:mma z');
 };
+

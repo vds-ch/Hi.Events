@@ -65,20 +65,20 @@ export const App: FC<
                 theme={{
                     colors: {
                         purple: [
-                            "#8260C6",
-                            "#734DBF",
-                            "#6741B2",
-                            "#5E3CA1",
-                            "#563792",
-                            "#4E3284",
-                            "#472E78",
-                            "#40296C",
-                            "#392562",
-                            "#332158",
+                            "#D4DE95",
+                            "#BAB86C",
+                            "#A7AE5E",
+                            "#9D9B4A",
+                            "#81864A",
+                            "#6A760C",
+                            "#97C010",
+                            "#556B2F",
+                            "#4B5C09",
+                            "#273E06",
                         ],
                     },
                     primaryColor: "purple",
-                    fontFamily: "'Varela Round', sans-serif",
+                    fontFamily: "'Acumin', 'Varela Round', sans-serif",
                 }}
             >
                 <HelmetProvider context={props.helmetContext}>
@@ -100,3 +100,4 @@ export const App: FC<
         </React.StrictMode>
     );
 };
+

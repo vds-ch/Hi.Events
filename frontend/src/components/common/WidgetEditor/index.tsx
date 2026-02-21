@@ -59,7 +59,7 @@ export const WidgetEditor = () => {
             'data-hievents-background-color="' + form.values.background_color + '" ' +
             'data-hievents-widget-type="widget" ' +
             'data-hievents-widget-version="1.0" ' +
-            'data-hievents-locale="en" ' +
+            'data-hievents-locale="de" ' +
             'data-hievents-padding="' + form.values.padding + 'px" ' +
             'data-hievents-autoresize="' + form.values.autoResize + '" ' +
             'data-hievents-continue-button-text="' + form.values.continue_button_text + '" ' +
@@ -79,7 +79,7 @@ const HiEventsWidget = ({
   backgroundColor = "${form.values.background_color}",
   widgetType = "widget",
   widgetVersion = "1.0",
-  locale = "en"
+  locale = "de"
 }) => {
   useEffect(() => {
     const script = document.createElement('script');
@@ -128,7 +128,7 @@ const App = () => {
         backgroundColor="${form.values.background_color}"
         widgetType="widget"
         widgetVersion="1.0"
-        locale="en"
+        locale="de"
       />
     </div>
   );
@@ -361,3 +361,4 @@ export default App;
         </div>
     );
 };
+

@@ -1327,7 +1327,7 @@ msgstr "Eincheck-URL kopieren"
 
 #: src/components/routes/product-widget/CollectInformation/index.tsx:306
 msgid "Copy details to all attendees"
-msgstr "Details auf alle Teilnehmer anwenden"
+msgstr "Details für Teilnehmer hier unten übernehmen"
 
 #: src/components/common/AttendeeTicket/index.tsx:91
 msgid "Copy Link"
@@ -2572,12 +2572,12 @@ msgid "If a new tab did not open, please  <0><1>{0}</1>.</0>"
 msgstr "Wenn keine neue Registerkarte geöffnet wurde, <0><1>{0}</1>.</0>"
 
 #: src/components/routes/event/Settings/Sections/LocationSettings/index.tsx:149
-#~ msgid "If blank, the address will be used to generate a Google map link"
-#~ msgstr "Wenn leer, wird die Adresse verwendet, um einen Google-Kartenlink zu generieren."
+#~ msgid "If blank, the address will be used to generate a map link"
+#~ msgstr "Wenn leer, wird die Adresse verwendet, um einen Kartenlink zu generieren."
 
 #: src/components/routes/event/Settings/Sections/LocationSettings/index.tsx:158
-msgid "If blank, the address will be used to generate a Google Mapa link"
-msgstr "Wenn leer, wird die Adresse verwendet, um einen Google Maps-Link zu erstellen"
+msgid "If blank, the address will be used to generate a map link"
+msgstr "Wenn leer, wird die Adresse verwendet, um einen Kartenlink zu erstellen"
 
 #: src/components/routes/event/Settings/Sections/PaymentSettings/index.tsx:158
 msgid "If enabled, check-in staff can either mark attendees as checked in or mark the order as paid and check in the attendees. If disabled, attendees associated with unpaid orders cannot be checked in."
@@ -2791,7 +2791,7 @@ msgstr "Nachname"
 #: src/components/routes/product-widget/CollectInformation/index.tsx:401
 #: src/components/routes/profile/ManageProfile/index.tsx:137
 msgid "Last Name"
-msgstr "Familienname, Nachname"
+msgstr "Nachname"
 
 #: src/components/common/WebhookTable/index.tsx:239
 msgid "Last Response"
@@ -5160,13 +5160,13 @@ msgstr "Dieser Benutzer ist nicht aktiv, da er die Einladung nicht angenommen ha
 
 #: src/components/common/AttendeeTable/index.tsx:182
 msgid "ticket"
-msgstr "Fahrkarte"
+msgstr "Ticket"
 
 #: src/components/common/AttendeeTable/index.tsx:111
 #: src/components/forms/ProductForm/index.tsx:130
 #: src/components/modals/CreateAttendeeModal/index.tsx:151
 msgid "Ticket"
-msgstr "Fahrkarte"
+msgstr "Ticket"
 
 #: src/components/common/TicketsTable/SortableTicket/index.tsx:52
 #~ msgid "Ticket deleted successfully"
@@ -5556,8 +5556,8 @@ msgid "View map"
 msgstr "Ansichts Karte"
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:65
-msgid "View on Google Maps"
-msgstr "Auf Google Maps anzeigen"
+msgid "View on Maps"
+msgstr "Auf Karte anzeigen"
 
 #: src/components/common/OrdersTable/index.tsx:111
 #~ msgid "View order"
@@ -6120,3 +6120,4 @@ msgstr "Postleitzahl"
 #: src/components/routes/product-widget/CollectInformation/index.tsx:349
 msgid "ZIP or Postal Code"
 msgstr "Postleitzahl"
+

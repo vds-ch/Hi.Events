@@ -4984,8 +4984,8 @@ msgid "View map"
 msgstr "Xem bản đồ"
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:65
-msgid "View on Google Maps"
-msgstr "Xem trên Google Maps"
+msgid "View on Maps"
+msgstr "Xem trên Maps"
 
 #: src/components/forms/StripeCheckoutForm/index.tsx:75
 #: src/components/forms/StripeCheckoutForm/index.tsx:85
@@ -5467,3 +5467,4 @@ msgstr "mã zip hoặc bưu điện"
 #: src/components/routes/product-widget/CollectInformation/index.tsx:349
 msgid "ZIP or Postal Code"
 msgstr "mã zip hoặc bưu điện"
+

@@ -4392,7 +4392,7 @@ msgid "View map"
 msgstr ""
 
 #: src/components/layouts/EventHomepage/EventInformation/index.tsx:68
-msgid "View on Google Maps"
+msgid "View on Maps"
 msgstr ""
 
 #: src/components/forms/StripeCheckoutForm/index.tsx:75
@@ -4787,3 +4787,4 @@ msgstr ""
 #: src/components/routes/product-widget/CollectInformation/index.tsx:336
 msgid "ZIP or Postal Code"
 msgstr ""
+

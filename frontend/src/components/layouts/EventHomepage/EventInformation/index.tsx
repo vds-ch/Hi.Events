@@ -57,12 +57,12 @@ export const EventInformation: FC<{
                                         component="a"
                                         target="_blank"
                                         href={
-                                            event.settings.maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatAddress(event?.settings?.location_details))}`}
+                                            event.settings.maps_url || `https://www.openstreetmap.org/search?query=${encodeURIComponent(formatAddress(event?.settings?.location_details))}`}
                                         variant="transparent"
                                         size="xs"
                                         rightSection={<IconExternalLink size={15}/>}
                                     >
-                                        {event.settings.maps_url ? t`View map` : t`View on Google Maps`}
+                                        {event.settings.maps_url ? t`View map` : t`View on Maps`}
                                     </Button>
                                 </div>
                             </div>
@@ -73,7 +73,6 @@ export const EventInformation: FC<{
 
             {event?.description && (
                 <div className={classes.eventDescription}>
-                    <h2>{t`About`}</h2>
                     <div dangerouslySetInnerHTML={{
                         __html: event.description || '',
                     }}/>
@@ -82,3 +81,4 @@ export const EventInformation: FC<{
         </>
     )
 }
+

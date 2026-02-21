@@ -57,7 +57,7 @@ export const getLocaleName = (locale: SupportedLocales) => {
 }
 
 export const getClientLocale = () => {
-    if (typeof window !== "undefined") {
+    /*if (typeof window !== "undefined") {
         const storedLocale = document
             .cookie
             .split(";")
@@ -69,18 +69,18 @@ export const getClientLocale = () => {
         }
 
         return getSupportedLocale(window.navigator.language);
-    }
+    }*/
 
-    return "en";
+    return "de";
 };
 
 export async function dynamicActivateLocale(locale: string) {
     try {
-        const messages = localeMessages[locale] || localeMessages["en"];
+        const messages = localeMessages[locale] || localeMessages["de"];
         i18n.load(locale, messages);
         i18n.activate(locale);
     } catch (error) {
-        i18n.activate("en");
+        i18n.activate("de");
     }
 }
 
@@ -97,5 +97,6 @@ export const getSupportedLocale = (userLocale: string) => {
         return mainLocale;
     }
 
-    return "en";
+    return "de";
 };
+
