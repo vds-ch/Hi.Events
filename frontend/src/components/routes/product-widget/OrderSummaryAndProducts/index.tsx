@@ -300,11 +300,13 @@ const EventDetails = ({event}: { event: Event }) => {
     return (
         <Card>
             <SimpleGrid cols={{base: 1, sm: 2}} spacing="md">
-                <DetailItem
-                    icon={IconCalendarEvent}
-                    label={t`Event Date`}
-                    value={<EventDateRange event={event}/>}
-                />
+	        {event.location_details && (
+		    <DetailItem
+                        icon={IconCalendarEvent}
+                        label={t`Event Date`}
+                        value={<EventDateRange event={event}/>}
+                    />
+		)}
                 {venueDetails && (
                     <DetailItem
                         icon={IconMapPin}
@@ -320,11 +322,13 @@ const EventDetails = ({event}: { event: Event }) => {
                         )}
                     />
                 )}
-                <DetailItem
-                    icon={IconClock}
-                    label={t`Timezone`}
-                    value={event.timezone}
-                />
+		{event.location_details && (
+		    <DetailItem
+                        icon={IconClock}
+                        label={t`Timezone`}
+                        value={event.timezone}
+                    />
+		)}
                 <DetailItem
                     icon={IconBuilding}
                     label={t`Organizer`}
@@ -598,7 +602,7 @@ export const OrderSummaryAndProducts = () => {
                 <h1 className={classes.heading}>{t`Event Details`}</h1>
                 <EventDetails event={event}/>
 
-                {order.status === 'COMPLETED' && <AddToCalendarCTA event={event}/>}
+                {order.status === 'COMPLETED' && event.location_details && <AddToCalendarCTA event={event}/>}
 
                 {(order?.attendees && order.attendees.length > 0) && (
                     <>

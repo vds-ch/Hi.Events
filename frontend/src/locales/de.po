@@ -9590,7 +9590,7 @@ msgstr "Sie sind startklar! Ihre Zahlungen werden reibungslos verarbeitet."
 
 #: src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx:163
 msgid "You're going to {0}!"
-msgstr "Sie gehen zu {0}!"
+msgstr "Bestellung erfolgreich für {0}!"
 
 #: src/components/modals/SendMessageModal/index.tsx:275
 msgid "Your account has messaging limits. To increase your limits, contact us at"

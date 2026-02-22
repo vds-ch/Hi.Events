@@ -79,9 +79,11 @@ export const InlineOrderSummary = ({
                         </div>
                         <div className={classes.eventDetails}>
                             <div className={classes.eventTitle}>{event.title}</div>
-                            <div className={classes.eventMeta}>
-                                {prettyDate(event.start_date, event.timezone, false)}
-                            </div>
+			    {location && (
+				<div className={classes.eventMeta}>
+                                    {prettyDate(event.start_date, event.timezone, false)}
+                                </div>
+			    )}
                             {location && (
                                 <div className={classes.eventMeta}>{location}</div>
                             )}
